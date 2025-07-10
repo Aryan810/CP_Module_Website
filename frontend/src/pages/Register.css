@@ -1,0 +1,83 @@
+/* Register page specific styles - extends Login.css */
+@import './Login.css';
+
+/* Additional styles for register form */
+.form-helper-text {
+  display: block;
+  margin-top: var(--spacing-xs);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* Adjust spacing for register form with more fields */
+.auth-card {
+  max-width: 480px;
+}
+
+/* Email domain validation styling */
+.form-input[name="email"]:focus {
+  border-color: var(--color-accent-primary);
+}
+
+.form-input[name="email"]:valid {
+  border-color: var(--color-success);
+}
+
+/* Password strength indicator could be added here */
+.password-strength-indicator {
+  margin-top: var(--spacing-xs);
+  height: 4px;
+  background: var(--color-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  transition: all var(--transition-normal);
+  border-radius: 2px;
+}
+
+.password-strength-weak {
+  width: 33%;
+  background: var(--color-error);
+}
+
+.password-strength-medium {
+  width: 66%;
+  background: var(--color-warning);
+}
+
+.password-strength-strong {
+  width: 100%;
+  background: var(--color-success);
+}
+
+/* Terms and conditions checkbox styling */
+.terms-checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+
+.terms-checkbox {
+  margin-top: 2px;
+  accent-color: var(--color-accent-primary);
+}
+
+.terms-text {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.terms-link {
+  color: var(--color-accent-primary);
+  text-decoration: none;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
