@@ -13,10 +13,240 @@ http://localhost:3000
 ### Root Endpoints
 - `GET /` - Welcome message
 - `GET /api` - API information
-- `GET /api/users` - User management endpoints
+
+### User Management
+- `GET /api/users/*` - User management endpoints
 
 ### Codeforces Integration
 - `GET /api/cf/*` - Codeforces data endpoints
+
+---
+
+## User Management API Endpoints
+
+All user endpoints work with the user authentication system and require proper credentials for sensitive operations.
+
+### 1. Get All Users - `/api/users/all/:admin_name`
+
+**Purpose**: Admin-only endpoint to view all users in the system
+
+**Requirements**: 
+- Admin user must exist and be logged in
+- Only users with `role: 'admin'` can access
+
+**Sample Response**:
+```json
+[
+  {
+    "_id": "60f7b3b3b3b3b3b3b3b3b3b3",
+    "username": "john_doe",
+    "email": "john@iitg.ac.in",
+    "role": "user",
+    "name": "John Doe",
+    "cfusername": "john_cf",
+    "ccusername": "john_cc",
+    "lcusername": "john_lc",
+    "acusername": "john_ac",
+    "loggedIn": true,
+    "createdAt": "2025-07-11T10:00:00.000Z",
+    "updatedAt": "2025-07-11T14:30:00.000Z"
+  }
+]
+```
+
+**Error Cases**:
+- `403`: Access denied - not an admin or admin not logged in
+- `500`: Server error
+
+---
+
+### 2. Get User by Username - `/api/users/:username`
+
+**Purpose**: Get specific user information
+
+**Requirements**: User must be logged in
+
+**Sample Response**:
+```json
+{
+  "_id": "60f7b3b3b3b3b3b3b3b3b3b3",
+  "username": "john_doe",
+  "email": "john@iitg.ac.in",
+  "role": "user",
+  "name": "John Doe",
+  "cfusername": "john_cf",
+  "ccusername": "john_cc",
+  "lcusername": "john_lc",
+  "acusername": "john_ac",
+  "loggedIn": true,
+  "createdAt": "2025-07-11T10:00:00.000Z",
+  "updatedAt": "2025-07-11T14:30:00.000Z"
+}
+```
+
+**Error Cases**:
+- `404`: User not found
+- `403`: User not logged in
+- `500`: Server error
+
+---
+
+### 3. Create New User - `POST /api/users/`
+
+**Purpose**: Register a new user in the system
+
+**Required Fields**:
+- `username` (string, unique)
+- `email` (string, unique) 
+- `password` (string)
+- `role` (string: 'admin', 'user', 'guest')
+- `cfusername` (string, unique)
+
+**Optional Fields**:
+- `name` (string)
+- `ccusername` (string, unique)
+- `lcusername` (string, unique) 
+- `acusername` (string, unique)
+
+**Sample Request**:
+```json
+{
+  "username": "jane_doe",
+  "email": "jane@iitg.ac.in",
+  "password": "securePassword123",
+  "role": "user",
+  "cfusername": "jane_cf",
+  "name": "Jane Doe"
+}
+```
+
+**Sample Response**:
+```json
+{
+  "_id": "60f7b3b3b3b3b3b3b3b3b3b3",
+  "username": "jane_doe",
+  "email": "jane@iitg.ac.in",
+  "role": "user",
+  "name": "Jane Doe",
+  "cfusername": "jane_cf",
+  "loggedIn": false,
+  "createdAt": "2025-07-11T15:00:00.000Z",
+  "updatedAt": "2025-07-11T15:00:00.000Z"
+}
+```
+
+**Error Cases**:
+- `400`: Missing required fields or validation error
+- `400`: Username/email/cfusername already exists
+
+---
+
+### 4. Login User - `PUT /api/users/login/:username`
+
+**Purpose**: Authenticate user and set logged in status
+
+**Required Body**:
+- `password` (string)
+
+**Sample Request**:
+```json
+{
+  "password": "securePassword123"
+}
+```
+
+**Sample Response**:
+```json
+{
+  "_id": "60f7b3b3b3b3b3b3b3b3b3b3",
+  "username": "john_doe",
+  "email": "john@iitg.ac.in",
+  "role": "user",
+  "name": "John Doe",
+  "cfusername": "john_cf",
+  "loggedIn": true,
+  "updatedAt": "2025-07-11T16:00:00.000Z"
+}
+```
+
+**Error Cases**:
+- `404`: User not found
+- `403`: User already logged in
+- `400`: Incorrect password
+
+---
+
+### 5. Logout User - `PUT /api/users/logout/:username`
+
+**Purpose**: Log out user and set logged in status to false
+
+**Sample Response**:
+```json
+{
+  "_id": "60f7b3b3b3b3b3b3b3b3b3b3",
+  "username": "john_doe",
+  "email": "john@iitg.ac.in",
+  "role": "user",
+  "name": "John Doe",
+  "cfusername": "john_cf",
+  "loggedIn": false,
+  "updatedAt": "2025-07-11T17:00:00.000Z"
+}
+```
+
+**Error Cases**:
+- `404`: User not found
+- `403`: User already logged out
+
+---
+
+### 6. Update User - `PUT /api/users/:username`
+
+**Purpose**: Update user information (requires password verification)
+
+**Required Body**:
+- `password` (string) - current password for verification
+
+**Note**: Currently validates password but doesn't update fields. Implementation may need enhancement for actual field updates.
+
+**Sample Request**:
+```json
+{
+  "password": "currentPassword123"
+}
+```
+
+**Error Cases**:
+- `404`: User not found
+- `400`: Incorrect password
+
+---
+
+### 7. Delete User - `DELETE /api/users/:username`
+
+**Purpose**: Delete user account (requires password verification)
+
+**Required Body**:
+- `password` (string) - user's password for verification
+
+**Sample Request**:
+```json
+{
+  "password": "userPassword123"
+}
+```
+
+**Sample Response**:
+```json
+{
+  "message": "User deleted successfully"
+}
+```
+
+**Error Cases**:
+- `404`: User not found
+- `400`: Incorrect password
+- `500`: Server error
 
 ---
 
@@ -309,29 +539,119 @@ All endpoints return consistent error format:
 
 ---
 
+## Authentication & Security
+
+### Password Security
+- All passwords are automatically hashed using bcrypt before storage
+- Password comparison uses bcrypt's secure comparison method
+- Minimum security: 10 salt rounds for password hashing
+
+### User Authentication
+- Login/logout system tracks user session state
+- Password verification required for sensitive operations (update, delete)
+- Admin-only endpoints protected by role-based access control
+
+### Data Validation
+- Unique constraints on username, email, and platform usernames
+- Required field validation on user creation
+- Email format validation (should end with @iitg.ac.in for students)
+
+---
+
 ## Authentication Requirements
 
+### For Codeforces Endpoints:
 All Codeforces endpoints require:
 1. User exists in database
 2. User has `loggedIn: true`
 3. User has valid `cfusername` field
 
+### For User Management Endpoints:
+- **Public**: User creation (POST /api/users/)
+- **Authentication Required**: Login, logout, get user info
+- **Password Verification**: Update user, delete user
+- **Admin Only**: Get all users (requires admin role + logged in)
+
 ## External Dependencies
 
-- **Codeforces API**: All endpoints depend on Codeforces public API
+- **MongoDB**: Database for user management and authentication
+- **bcrypt**: Password hashing and verification
+- **Mongoose**: MongoDB object modeling
+- **Codeforces API**: All CF endpoints depend on Codeforces public API
 - **Rate Limiting**: Respects Codeforces API rate limits (1 request per second)
 - **No API Keys**: Uses only public Codeforces endpoints
 
 ---
 
+## Complete API Reference
+
+### User Management Endpoints Summary:
+```
+GET    /api/users/all/:admin_name    - Get all users (admin only)
+GET    /api/users/:username          - Get user by username
+POST   /api/users/                   - Create new user
+PUT    /api/users/login/:username    - Login user
+PUT    /api/users/logout/:username   - Logout user  
+PUT    /api/users/:username          - Update user (password required)
+DELETE /api/users/:username          - Delete user (password required)
+```
+
+### Codeforces Endpoints Summary:
+```
+GET /api/cf/basic/:username       - Basic profile info
+GET /api/cf/profile/:username     - Full profile details
+GET /api/cf/contests/:username    - Contest history
+GET /api/cf/submissions/:username - Recent submissions (?count=N)
+GET /api/cf/stats/:username       - Quick statistics
+GET /api/cf/full/:username        - Complete data
+GET /api/cf/:username             - Alias for /full (backward compatibility)
+```
+
+---
+
 ## Development Setup
 
-1. Ensure MongoDB is running
-2. Configure environment variables in `.env`
-3. Start server: `npm start`
-4. Test endpoints with tools like Postman or curl
+1. **Install Dependencies**: `npm install`
+2. **Setup MongoDB**: Ensure MongoDB is running locally or configure connection string
+3. **Environment Variables**: Configure in `.env` file:
+   ```
+   PORT=3000
+   MONGODB_URI=mongodb://localhost:27017/cp_website
+   ```
+4. **Start Server**: `npm start`
+5. **Test Endpoints**: Use tools like Postman, curl, or REST client
 
-**Example Test**:
+**Example Tests**:
 ```bash
+# Test user creation
+curl -X POST http://localhost:3000/api/users/ \
+  -H "Content-Type: application/json" \
+  -d '{"username":"testuser","email":"test@iitg.ac.in","password":"test123","role":"user","cfusername":"testcf"}'
+
+# Test user login  
+curl -X PUT http://localhost:3000/api/users/login/testuser \
+  -H "Content-Type: application/json" \
+  -d '{"password":"test123"}'
+
+# Test Codeforces basic info
 curl http://localhost:3000/api/cf/basic/testuser
+```
+
+## Database Schema
+
+### User Model:
+```javascript
+{
+  username: String (required, unique),
+  email: String (required, unique),
+  password: String (required, hashed),
+  role: String (enum: ['admin', 'user', 'guest'], default: 'user'),
+  name: String (optional),
+  cfusername: String (required, unique),
+  ccusername: String (optional, unique),
+  lcusername: String (optional, unique),
+  acusername: String (optional, unique),
+  loggedIn: Boolean (default: false),
+  timestamps: true (createdAt, updatedAt)
+}
 ```
