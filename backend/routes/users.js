@@ -3,7 +3,7 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Get all users
-router.get('all/:admin_name', async (req, res) => {
+router.get('/all/:admin_name', async (req, res) => {
     try {
         const admin = await User.findOne({'username': req.params.admin_name, 'role': 'admin'});
         if (!admin) {
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // Login user
-router.put('login/:username', async (req, res) => {
+router.put('/login/:username', async (req, res) => {
     try {
         const user = await User.findOne({'username': req.params.username});
         if (!user) {
@@ -61,7 +61,7 @@ router.put('login/:username', async (req, res) => {
         if (user.loggedIn) {
             return res.status(403).json({ message: 'User already logged in' });
         }
-        const isPasswordCorrect = await User.comparePassword(req.body.password, user.password);
+        const isPasswordCorrect = await user.comparePassword(req.body.password);
         if (!isPasswordCorrect){
             return res.status(400).json({ message: 'Incorrect password' });
         }
@@ -74,7 +74,7 @@ router.put('login/:username', async (req, res) => {
 });
 
 // Logout user
-router.put('logout/:username', async (req, res) => {
+router.put('/logout/:username', async (req, res) => {
     try {
         const user = await User.findOne({'username': req.params.username});
         if (!user){
@@ -98,7 +98,7 @@ router.put('/:username', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }   
-        const isPasswordCorrect = await User.comparePassword(req.body.password, user.password);
+        const isPasswordCorrect = await user.comparePassword(req.body.password);
         if (!isPasswordCorrect){
             return res.status(400).json({ message: 'Incorrect password' });
         }
@@ -112,11 +112,11 @@ router.put('/:username', async (req, res) => {
 // Delete user
 router.delete('/:username', async (req, res) => {
     try {
-        const user = await User.findOne(req.params.username);
+        const user = await User.findOne({'username': req.params.username});
         if (!user) {
             return res.status(404).json({ message: 'User not found !' });
         }
-        const isPasswordCorrect = await User.comparePassword(req.body.password, user.password);
+        const isPasswordCorrect = await user.comparePassword(req.body.password);
         if (!isPasswordCorrect) {
             return res.status(400).json({ message: 'Incorrect password !' });
         }

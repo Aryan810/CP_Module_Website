@@ -19,12 +19,13 @@ app.use(cors());
 // Middleware to parse JSON
 app.use(express.json());
 // Use routes
+
+app.use('/api/cf', userCodeforcesRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api', indexRoutes);
 app.use('/', (req, res) => {
     res.json({"message": "Welcome to Backend root!"});
 });
-app.use('/api', indexRoutes);
-app.use('/api/cf', userCodeforcesRoutes);
-app.use('/api/users', userRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI) // asyncronous
