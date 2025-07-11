@@ -3,7 +3,7 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Get all users
-router.get('/:admin_name', async (req, res) => {
+router.get('all/:admin_name', async (req, res) => {
     try {
         const admin = await User.findOne({'username': req.params.admin_name, 'role': 'admin'});
         if (!admin) {
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
 });
 
 // Login user
-router.put('/:username', async (req, res) => {
+router.put('login/:username', async (req, res) => {
     try {
         const user = await User.findOne({'username': req.params.username});
         if (!user) {
@@ -74,7 +74,7 @@ router.put('/:username', async (req, res) => {
 });
 
 // Logout user
-router.put('/:username', async (req, res) => {
+router.put('logout/:username', async (req, res) => {
     try {
         const user = await User.findOne({'username': req.params.username});
         if (!user){
