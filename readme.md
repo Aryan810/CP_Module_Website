@@ -9,3 +9,15 @@
 #### -> Name, Image (recommended. ), Institue, rating, maxrating, questions, solved. (any other if possible.)
 
 # These are just for reference, may include more (or maybe less).
+
+## 11 July, 2025
+
+### 1: frontend - building a basic profile page in frontend.
+#### -> show Name, Rating, Max-rating, Image, Designation, etc.
+
+### 2: backend - make a API endpoint which fetches user details from codeforces (for now) and if frontend makes a request at it. it returns that.
+(Is this workflow ok ? - [ ? ]).
+
+
+
+
