@@ -10,9 +10,123 @@
   font-style: italic;
 }
 
-/* Adjust spacing for register form with more fields */
-.auth-card {
-  max-width: 480px;
+/* Enhanced layout for register form */
+.auth-page-container:has(.register-form-layout) .auth-card {
+  max-width: 900px; /* Moderately wider for desktop two-column layout */
+  transition: max-width var(--transition-normal);
+}
+
+/* Override the auth-form-wrapper max-width specifically for register page */
+.auth-page-container:has(.register-form-layout) .auth-form-wrapper {
+  max-width: 900px; /* Match the auth-card width */
+}
+
+/* Two-column layout for desktop */
+.form-columns-container {
+  display: flex;
+  gap: 3rem; /* Increased gap for better spacing */
+  width: 100%;
+}
+
+.form-column {
+  flex: 1;
+  min-width: 0; /* Prevent flex items from overflowing */
+}
+
+/* Ensure form inputs take full width of their column */
+.form-column .form-input {
+  width: 100%;
+  min-width: 280px; /* Minimum width to prevent text wrapping */
+  box-sizing: border-box;
+}
+
+/* Make labels and helper text not wrap */
+.form-column .form-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.form-column .form-helper-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.form-group-spacer {
+  /* Empty div to balance the layout height */
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Enhanced form styling for register page */
+.register-form-layout .form-group {
+  margin-bottom: 1.5rem; /* Slightly more spacing between form groups */
+}
+
+.register-form-layout .form-input {
+  padding: 0.875rem; /* Slightly more padding for better appearance */
+  font-size: 1rem;
+}
+
+.form-submit-section {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  .auth-page-container:has(.register-form-layout) .auth-card {
+    max-width: 480px; /* Original width for mobile */
+  }
+  
+  .auth-page-container:has(.register-form-layout) .auth-form-wrapper {
+    max-width: 480px; /* Match mobile width */
+  }
+  
+  .form-columns-container {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .form-column {
+    width: 100%;
+  }
+  
+  .form-column .form-input {
+    min-width: auto; /* Remove min-width on mobile */
+  }
+  
+  .form-column .form-label,
+  .form-column .form-helper-text {
+    white-space: normal; /* Allow wrapping on mobile */
+    overflow: visible;
+    text-overflow: initial;
+  }
+  
+  .form-group-spacer {
+    display: none;
+  }
+}
+
+/* Tablet breakpoint */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .auth-page-container:has(.register-form-layout) .auth-card {
+    max-width: 700px; /* Moderate width for tablet */
+  }
+  
+  .auth-page-container:has(.register-form-layout) .auth-form-wrapper {
+    max-width: 700px; /* Match tablet width */
+  }
+  
+  .form-columns-container {
+    gap: 2rem;
+  }
+  
+  .form-column .form-input {
+    min-width: 250px; /* Slightly smaller min-width for tablet */
+  }
 }
 
 /* Email domain validation styling */

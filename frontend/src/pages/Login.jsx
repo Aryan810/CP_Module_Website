@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import config from '../config/env.js';
 import './Login.css';
 
 const Login = () => {
@@ -40,11 +41,33 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Login submitted:', { ...formData, userType });
-      // Handle login logic here
+      try {
+        // Example API call using environment variable
+        const response = await fetch(`${config.apiBaseUrl}/api/users/login/${formData.username}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            password: formData.password
+          })
+        });
+        
+        if (response.ok) {
+          const userData = await response.json();
+          console.log('Login successful:', userData);
+          // Handle successful login (redirect, store token, etc.)
+        } else {
+          const errorData = await response.json();
+          setErrors({ submit: errorData.message || 'Login failed' });
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        setErrors({ submit: 'Network error. Please try again.' });
+      }
     }
   };
 
@@ -112,6 +135,12 @@ const Login = () => {
             <button type="submit" className="btn-auth-primary">
               Sign In as {userType === 'user' ? 'User' : 'Admin'}
             </button>
+            
+            {errors.submit && (
+              <div className="error-message" style={{ textAlign: 'center', marginTop: '1rem' }}>
+                {errors.submit}
+              </div>
+            )}
           </form>
 
           <div className="auth-footer">

@@ -30,6 +30,54 @@
 #### -> All existing functionality preserved: routing, authentication UI, responsive design
 #### -> Development server now starts faster with hot module replacement
 
-## If anyone want add anything here. Please add after this and don't erase previour TODOs.
+# ----------------------------------------------------------------
+
+## 13 July, 2025
+
+### Project Overview (What we've done so far)
+
+**Backend:**
+- Authentication system with MongoDB
+- Password hashing
+- User registration and login/logout APIs
+- Codeforces data fetching setup
+- Express.js server
+
+**Frontend:**
+- React 19 + Vite 7 setup
+- Login and register pages
+- Basic form validation and routing
+- Responsive design
+
+**Status:** Auth works, forms are done, need to build profile page next.
+
+### 13 July, 2025
+
+**Frontend:**
+- Remove login/register buttons when user is logged in
+- Add user profile section in navbar (right side)
+- Show user's name and Codeforces profile image
+- Handle login/logout state properly
+- Build leaderboard page with filtering options (contests and platform.)
+- Add dropdown/select components for contest and platform selection.
+- Display user rankings in a nice table format (COLOR - gold for 1st, silver for 2nd, bronze for 3rd)
+- Fetch leaderboard data from backend APIs (specify which ranklist you want.)
+
+**Backend:**
+- Make sure user data includes Codeforces image URL
+- API endpoint for leaderboard data (contest-specific rankings)
+- API for platform-wise rankings (Codeforces, etc.)
+- Overall ranking algorithm and API endpoint
+- Scheduled function to fetch contest results when contests end (on some platform)
+- Use Codeforces calendar API to track contest schedules
+- Auto-fetch user ranks and questions solved after each contest (once codeforces API starts to work.)
+- Ranking algorithm to calculate overall scores (TBD).
+
+# ----------------------------------------------------------------
+
+
+
+
+
 
 
