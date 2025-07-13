@@ -22,24 +22,24 @@
 ### Today's tasks (13 July)
 
 **Frontend:**
-- Remove login/register buttons when user is logged in
-- Add user profile section in navbar (right side)
-- Show user's name and Codeforces profile image
-- Handle login/logout state properly
-- Build leaderboard page with filtering options (contests and platform.)
-- Add dropdown/select components for contest and platform selection.
-- Display user rankings in a nice table format (COLOR - gold for 1st, silver for 2nd, bronze for 3rd)
-- Fetch leaderboard data from backend APIs (specify which ranklist you want.)
+- [ ] Remove login/register buttons when user is logged in
+- [ ] Add user profile section in navbar (right side)
+- [ ] Show user's name and Codeforces profile image
+- [ ] Handle login/logout state properly
+- [ ] Build leaderboard page with filtering options (contests and platform.)
+- [ ] Add dropdown/select components for contest and platform selection.
+- [ ] Display user rankings in a nice table format (COLOR - gold for 1st, silver for 2nd, bronze for 3rd)
+- [ ] Fetch leaderboard data from backend APIs (specify which ranklist you want.)
 
 **Backend:**
-- Make sure user data includes Codeforces image URL
-- API endpoint for leaderboard data (contest-specific rankings)
-- API for platform-wise rankings (Codeforces, etc.)
-- Overall ranking algorithm and API endpoint
-- Scheduled function to fetch contest results when contests end (on some platform)
-- Use Codeforces calendar API to track contest schedules
-- Auto-fetch user ranks and questions solved after each contest (once codeforces API starts to work.)
-- Ranking algorithm to calculate overall scores (TBD).
+- [ ] Make sure user data includes Codeforces image URL
+- [ ] API endpoint for leaderboard data (contest-specific rankings)
+- [ ] API for platform-wise rankings (Codeforces, etc.)
+- [ ] Overall ranking algorithm and API endpoint
+- [ ] Scheduled function to fetch contest results when contests end (on some platform)
+- [ ] Use Codeforces calendar API to track contest schedules
+- [ ] Auto-fetch user ranks and questions solved after each contest (once codeforces API starts to work.)
+- [ ] Ranking algorithm to calculate overall scores (TBD).
 
 # ----------------------------------------------------------------
 
