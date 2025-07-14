@@ -34,16 +34,7 @@ async function connectToDatabase() {
     // Connect to MongoDB
   try {
     console.log('Connecting to MongoDB...');
-    const connection = await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      bufferCommands: false,
-      bufferMaxEntries: 0,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-    });
-    
+    const connection = await mongoose.connect(process.env.MONGO_URI);
     cachedConnection = connection;
     console.log('Connected to MongoDB successfully');
     return connection;
@@ -73,11 +64,19 @@ app.use('/', (req, res) => {
     res.json({"message": "Welcome to Backend root!"});
 });
 
-// For local development
 if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+    
+  connectToDatabase()
+    .then(() => {
+      app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+        console.log('Database connected successfully');
+      });
+    })
+    .catch((error) => {
+      console.error('Failed to connect to database:', error);
+      process.exit(1);
+    });
 }
 
 // Export for Vercel serverless
