@@ -8,12 +8,14 @@ export default defineConfig(({ mode }) => {
   
   return {
     plugins: [react()],
+    base: '/',
     server: {
       port: parseInt(env.VITE_PORT) || 3000,
       open: true
     },
     build: {
-      outDir: 'dist'
+      outDir: 'dist',
+      assetsDir: 'assets'
     }
   }
 })
