@@ -18,23 +18,61 @@ app.use(cors());
 
 // Middleware to parse JSON
 app.use(express.json());
-// Use routes
 
+// Connect to MongoDB with connection pooling for serverless
+let cachedConnection = null;
+
+async function connectToDatabase() {
+  if (cachedConnection) {
+    return cachedConnection;
+  }
+  
+  try {
+    const connection = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      bufferCommands: false,
+      bufferMaxEntries: 0,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    
+    cachedConnection = connection;
+    console.log('Connected to MongoDB');
+    return connection;
+  } catch (error) {
+    console.error('MongoDB connection error:', error);
+    throw error;
+  }
+}
+
+// Middleware to ensure database connection
+app.use(async (req, res, next) => {
+  try {
+    await connectToDatabase();
+    console.log(`${req.method} ${req.path} - ${req.url}`); // Debug logging
+    next();
+  } catch (error) {
+    console.error('Database connection failed:', error);
+    res.status(500).json({ message: 'Database connection failed' });
+  }
+});
+
+// Use routes - ORDER MATTERS!
 app.use('/api/cf', userCodeforcesRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api', indexRoutes);
+app.use('/api', indexRoutes);  // This should be LAST among /api routes
 app.use('/', (req, res) => {
     res.json({"message": "Welcome to Backend root!"});
 });
 
-// connect to db
-mongoose.connect(process.env.MONGO_URI) // asyncronous
-    .then(() => {
-        // listening for requests
-        app.listen(process.env.PORT, () => {
-            console.log(`connected to DB and Listening on port ${process.env.PORT}...`);
-        });
-    })
-    .catch((err) => {
-        console.log(err);
-    })
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export for Vercel serverless
+module.exports = app;

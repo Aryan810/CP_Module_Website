@@ -19,10 +19,4 @@ const config = {
   // dbPassword: import.meta.env.DATABASE_PASSWORD, // ❌ undefined (no VITE_ prefix)
 };
 
-// Debug: You can console.log to see what's available
-console.log('Available env vars:', {
-  allViteEnvs: import.meta.env,
-  ourConfig: config
-});
-
 export default config;
