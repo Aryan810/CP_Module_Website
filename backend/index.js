@@ -31,7 +31,7 @@ async function connectToDatabase() {
   if (!process.env.MONGO_URI) {
     throw new Error('MONGO_URI environment variable is not set');
   }
-  
+    // Connect to MongoDB
   try {
     console.log('Connecting to MongoDB...');
     const connection = await mongoose.connect(process.env.MONGO_URI, {
