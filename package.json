@@ -1,0 +1,15 @@
+{
+  "name": "cp-website",
+  "version": "1.0.0",
+  "description": "Competitive Programming Website - Full Stack",
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "start": "cd backend && npm start",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm start",
+    "install:all": "cd frontend && npm install && cd ../backend && npm install"
+  },
+  "keywords": ["competitive-programming", "react", "express", "mongodb"],
+  "author": "CodingClub-IITG",
+  "license": "MIT"
+}

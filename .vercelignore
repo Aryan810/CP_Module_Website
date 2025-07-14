@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Development files
+*.log
+.DS_Store
+.env.local
+.env.development
+.env.test
+
+# Build outputs (will be handled by Vercel)
+frontend/dist/
+frontend/build/
+
+# IDE files
+.vscode/
+.idea/
