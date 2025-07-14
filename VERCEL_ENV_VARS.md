@@ -9,7 +9,7 @@ JWT_SECRET=your-random-secret-key-123
 PORT=3000
 
 ### Frontend (Client-side):
-VITE_API_BASE_URL=
+VITE_API_BASE_URL=""
 VITE_APP_TITLE=CodingClub-IITG
 
 ## Important Notes:

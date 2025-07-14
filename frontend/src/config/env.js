@@ -4,7 +4,7 @@
 const config = {
   // Server configuration (accessible because of VITE_ prefix)
   port: import.meta.env.VITE_PORT || '3000',
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000',
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '' : 'http://localhost:3000'),
   
   // App configuration (accessible because of VITE_ prefix)
   appTitle: import.meta.env.VITE_APP_TITLE || 'CodeWars',
