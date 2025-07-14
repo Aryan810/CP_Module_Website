@@ -13,11 +13,6 @@
       "use": "@vercel/node"
     }
   ],
-  "functions": {
-    "backend/index.js": {
-      "includeFiles": "backend/**"
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -25,7 +20,8 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/frontend/index.html"
+      "dest": "/frontend/$1"
     }
-  ]
+  ],
+  "outputDirectory": "frontend/dist"
 }
