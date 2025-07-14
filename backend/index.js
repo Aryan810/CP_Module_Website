@@ -27,7 +27,13 @@ async function connectToDatabase() {
     return cachedConnection;
   }
   
+  // Check if MONGO_URI is available
+  if (!process.env.MONGO_URI) {
+    throw new Error('MONGO_URI environment variable is not set');
+  }
+  
   try {
+    console.log('Connecting to MongoDB...');
     const connection = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -39,7 +45,7 @@ async function connectToDatabase() {
     });
     
     cachedConnection = connection;
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB successfully');
     return connection;
   } catch (error) {
     console.error('MongoDB connection error:', error);

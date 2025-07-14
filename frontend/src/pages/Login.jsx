@@ -45,7 +45,9 @@ const Login = () => {
     e.preventDefault();
     if (validateForm()) {
       try {
-        // Example API call using environment variable
+        console.log('Attempting login for:', formData.username);
+        console.log('API URL:', `${config.apiBaseUrl}/api/users/login/${formData.username}`);
+        
         const response = await fetch(`${config.apiBaseUrl}/api/users/login/${formData.username}`, {
           method: 'PUT',
           headers: {
@@ -56,13 +58,40 @@ const Login = () => {
           })
         });
         
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
+        
         if (response.ok) {
-          const userData = await response.json();
-          console.log('Login successful:', userData);
-          // Handle successful login (redirect, store token, etc.)
+          const responseText = await response.text();
+          console.log('Response text:', responseText);
+          
+          if (responseText) {
+            try {
+              const userData = JSON.parse(responseText);
+              console.log('Login successful:', userData);
+              // Handle successful login (redirect, store token, etc.)
+            } catch (parseError) {
+              console.error('JSON parse error:', parseError);
+              setErrors({ submit: 'Invalid response from server' });
+            }
+          } else {
+            console.error('Empty response received');
+            setErrors({ submit: 'Empty response from server' });
+          }
         } else {
-          const errorData = await response.json();
-          setErrors({ submit: errorData.message || 'Login failed' });
+          const responseText = await response.text();
+          console.log('Error response text:', responseText);
+          
+          if (responseText) {
+            try {
+              const errorData = JSON.parse(responseText);
+              setErrors({ submit: errorData.message || 'Login failed' });
+            } catch (parseError) {
+              setErrors({ submit: `Server error: ${response.status}` });
+            }
+          } else {
+            setErrors({ submit: `Server error: ${response.status}` });
+          }
         }
       } catch (error) {
         console.error('Login error:', error);

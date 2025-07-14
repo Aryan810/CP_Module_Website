@@ -54,22 +54,54 @@ router.post('/', async (req, res) => {
 // Login user
 router.put('/login/:username', async (req, res) => {
     try {
+        console.log('Login attempt for username:', req.params.username);
+        
+        // Validate request body
+        if (!req.body.password) {
+            return res.status(400).json({ message: 'Password is required' });
+        }
+        
         const user = await User.findOne({'username': req.params.username});
         if (!user) {
+            console.log('User not found:', req.params.username);
             return res.status(404).json({ message: 'User not found' });
         }
+        
         if (user.loggedIn) {
+            console.log('User already logged in:', req.params.username);
             return res.status(403).json({ message: 'User already logged in' });
         }
+        
         const isPasswordCorrect = await user.comparePassword(req.body.password);
         if (!isPasswordCorrect){
+            console.log('Incorrect password for:', req.params.username);
             return res.status(400).json({ message: 'Incorrect password' });
         }
+        
         user.loggedIn = true;
         const saved = await user.save();
-        res.json(saved);
+        console.log('Login successful for:', req.params.username);
+        
+        // Return a clean response without sensitive data
+        const userResponse = {
+            id: saved._id,
+            username: saved.username,
+            email: saved.email,
+            role: saved.role,
+            name: saved.name,
+            cfusername: saved.cfusername,
+            loggedIn: saved.loggedIn,
+            createdAt: saved.createdAt,
+            updatedAt: saved.updatedAt
+        };
+        
+        res.status(200).json({ 
+            message: 'Login successful', 
+            user: userResponse 
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Login error:', error);
+        res.status(500).json({ message: 'Internal server error: ' + error.message });
     }
 });
 
