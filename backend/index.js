@@ -44,17 +44,6 @@ async function connectToDatabase() {
   }
 }
 
-// Middleware to ensure database connection
-app.use(async (req, res, next) => {
-  try {
-    await connectToDatabase();
-    console.log(`${req.method} ${req.path} - ${req.url}`); // Debug logging
-    next();
-  } catch (error) {
-    console.error('Database connection failed:', error);
-    res.status(500).json({ message: 'Database connection failed' });
-  }
-});
 
 // Use routes - ORDER MATTERS!
 app.use('/api/cf', userCodeforcesRoutes);
@@ -64,8 +53,8 @@ app.use('/', (req, res) => {
     res.json({"message": "Welcome to Backend root!"});
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    
+// if (process.env.NODE_ENV !== 'production') {
+
   connectToDatabase()
     .then(() => {
       app.listen(PORT, () => {
@@ -77,7 +66,7 @@ if (process.env.NODE_ENV !== 'production') {
       console.error('Failed to connect to database:', error);
       process.exit(1);
     });
-}
+// }
 
 // Export for Vercel serverless
 module.exports = app;
