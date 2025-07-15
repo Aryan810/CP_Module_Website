@@ -105,18 +105,19 @@ const Register = () => {
           navigate('/login');
           
         } else {
-          const errorData = await response.json();
+          console.log('Registration failed with status:', response.status);
+          const responseText = await response.text();
+          console.log('Error response:', responseText);
           
-          // Handle different types of errors
-          if (response.status === 400) {
-            // Validation errors or duplicate user
-            if (errorData.message.includes('username') || errorData.message.includes('duplicate')) {
-              setErrors({ submit: 'Username or email already exists. Please try different credentials.' });
-            } else {
-              setErrors({ submit: errorData.message || 'Registration failed. Please check your information.' });
-            }
-          } else {
-            setErrors({ submit: 'Server error. Please try again later.' });
+          try {
+            const errorData = JSON.parse(responseText);
+            console.log('Parsed error data:', errorData);
+            
+            // Show the actual error message from the server
+            setErrors({ submit: errorData.message || 'Registration failed. Please check your information.' });
+          } catch (parseError) {
+            console.error('Failed to parse error response:', parseError);
+            setErrors({ submit: `Server error: ${response.status}` });
           }
         }
       } catch (error) {

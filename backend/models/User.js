@@ -35,17 +35,20 @@ const userSchema = new mongoose.Schema({
     ccusername: {
         type: String,
         required: false,
-        unique: true
+        unique: true,
+        sparse: true  // This allows multiple null/undefined values
     },
     lcusername: {
         type: String,
         required: false,
-        unique: true
+        unique: true,
+        sparse: true  // This allows multiple null/undefined values
     },
     acusername: {
         type: String,
         required: false,
-        unique: true
+        unique: true,
+        sparse: true  // This allows multiple null/undefined values
     },
     loggedIn: {
         type: Boolean,

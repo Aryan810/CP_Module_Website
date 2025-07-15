@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
+const { verifyCodeforcesUsername } = require('../utils/codeforcesVerification');
 const router = express.Router();
 
 // Get all users
@@ -67,6 +68,15 @@ router.post('/', async (req, res) => {
             console.log('User already exists:', existingUser.username);
             return res.status(400).json({ 
                 message: 'User with this username, email, or Codeforces username already exists' 
+            });
+        }
+
+        // Verify Codeforces username exists
+        const cfVerification = await verifyCodeforcesUsername(req.body.cfusername);
+        if (!cfVerification.exists) {
+            const errorMessage = cfVerification.error || 'Codeforces username does not exist. Please enter a valid Codeforces username.';
+            return res.status(400).json({ 
+                message: errorMessage
             });
         }
         
