@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const { verifyCodeforcesUsername } = require('../utils/codeforcesVerification');
+const { fetchCodeforcesUserProfile } = require('../services/codeforcesService');
 const router = express.Router();
 
 // Get all users
@@ -71,7 +72,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // Verify Codeforces username exists
+        // Verify Codeforces username exists and fetch profile data
         const cfVerification = await verifyCodeforcesUsername(req.body.cfusername);
         if (!cfVerification.exists) {
             const errorMessage = cfVerification.error || 'Codeforces username does not exist. Please enter a valid Codeforces username.';
@@ -79,8 +80,17 @@ router.post('/', async (req, res) => {
                 message: errorMessage
             });
         }
+
+        // Fetch Codeforces profile data including image
+        const cfProfile = await fetchCodeforcesUserProfile(req.body.cfusername);
         
-        const user = new User(req.body);
+        // Create user with Codeforces image URL
+        const userData = {
+            ...req.body,
+            cfImageUrl: cfProfile?.avatar || ''
+        };
+        
+        const user = new User(userData);
         const savedUser = await user.save();
         console.log('User created successfully:', savedUser.username);
         
@@ -92,6 +102,7 @@ router.post('/', async (req, res) => {
             role: savedUser.role,
             name: savedUser.name,
             cfusername: savedUser.cfusername,
+            cfImageUrl: savedUser.cfImageUrl,
             loggedIn: savedUser.loggedIn,
             createdAt: savedUser.createdAt,
             updatedAt: savedUser.updatedAt
@@ -164,6 +175,7 @@ router.put('/login/:username', async (req, res) => {
             role: saved.role,
             name: saved.name,
             cfusername: saved.cfusername,
+            cfImageUrl: saved.cfImageUrl,
             loggedIn: saved.loggedIn,
             createdAt: saved.createdAt,
             updatedAt: saved.updatedAt

@@ -32,6 +32,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    cfImageUrl: {
+        type: String,
+        required: false,
+        default: ''
+    },
     ccusername: {
         type: String,
         required: false,

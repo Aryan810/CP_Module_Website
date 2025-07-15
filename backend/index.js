@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 3000;
 const indexRoutes = require('./routes/index');
 const userRoutes = require('./routes/users');
 const userCodeforcesRoutes = require('./routes/codeforces');
+const cfUpdateRoutes = require('./routes/cfUpdate');
 
 // cors middleware.
 app.use(cors());
@@ -47,6 +48,7 @@ async function connectToDatabase() {
 
 // Use routes - ORDER MATTERS!
 app.use('/api/cf', userCodeforcesRoutes);
+app.use('/api/cf-update', cfUpdateRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api', indexRoutes);  // This should be LAST among /api routes
 app.use('/', (req, res) => {
