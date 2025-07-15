@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 import config from '../config/env.js';
 import './Register.css';
 
 const Register = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -13,7 +16,6 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -91,18 +93,9 @@ const Register = () => {
           const userData = await response.json();
           console.log('Registration successful:', userData);
           
-          // Clear form and show success
-          setFormData({
-            username: '',
-            email: '',
-            cfusername: '',
-            password: '',
-            confirmPassword: ''
-          });
-          
-          // Redirect to login page with success message
-          alert('Registration successful! Please login with your credentials.');
-          navigate('/login');
+          // Auto-login after successful registration
+          login(userData.user);
+          navigate('/');
           
         } else {
           console.log('Registration failed with status:', response.status);

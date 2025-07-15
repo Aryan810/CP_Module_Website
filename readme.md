@@ -22,10 +22,10 @@
 ### Today's tasks (13 July)
 
 **Frontend:**
-- [ ] Remove login/register buttons when user is logged in
-- [ ] Add user profile section in navbar (right side)
-- [ ] Show user's name and Codeforces profile image
-- [ ] Handle login/logout state properly
+- [x] Remove login/register buttons when user is logged in
+- [x] Add user profile section in navbar (right side)
+- [x] Show user's name and Codeforces profile image
+- [x] Handle login/logout state properly
 - [ ] Build leaderboard page with filtering options (contests and platform.)
 - [ ] Add dropdown/select components for contest and platform selection.
 - [ ] Display user rankings in a nice table format (COLOR - gold for 1st, silver for 2nd, bronze for 3rd)

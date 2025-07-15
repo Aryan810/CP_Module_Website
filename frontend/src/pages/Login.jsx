@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext.jsx';
 import config from '../config/env.js';
 import './Login.css';
 
 const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [userType, setUserType] = useState('user');
   const [formData, setFormData] = useState({
     username: '',
@@ -69,7 +72,8 @@ const Login = () => {
             try {
               const userData = JSON.parse(responseText);
               console.log('Login successful:', userData);
-              // Handle successful login (redirect, store token, etc.)
+              login(userData.user);
+              navigate('/');
             } catch (parseError) {
               console.error('JSON parse error:', parseError);
               setErrors({ submit: 'Invalid response from server' });
