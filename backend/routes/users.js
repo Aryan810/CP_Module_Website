@@ -194,18 +194,30 @@ router.put('/login/:username', async (req, res) => {
 // Logout user
 router.put('/logout/:username', async (req, res) => {
     try {
+        console.log('Logout attempt for username:', req.params.username);
+        
         const user = await User.findOne({'username': req.params.username});
         if (!user){
+            console.log('User not found during logout:', req.params.username);
             return res.status(404).json({ message: 'User not found' });
         }
+        
         if (!user.loggedIn) {
-            return res.status(403).json({ message: 'User already logged out!' });
+            console.log('User already logged out:', req.params.username);
+            return res.status(200).json({ message: 'User already logged out' });
         }
+        
         user.loggedIn = false;
         const saved = await user.save();
-        res.json(saved);
+        console.log('Logout successful for:', req.params.username);
+        
+        res.status(200).json({ 
+            message: 'Logout successful',
+            username: saved.username
+        });
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error('Logout error:', error);
+        res.status(500).json({ message: 'Internal server error: ' + error.message });
     }
 });
 

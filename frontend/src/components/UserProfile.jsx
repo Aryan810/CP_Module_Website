@@ -5,6 +5,7 @@ import './UserProfile.css';
 const UserProfile = () => {
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
 
   // Don't render if no user
@@ -23,9 +24,18 @@ const UserProfile = () => {
     };
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    setIsDropdownOpen(false);
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      await logout();
+      setIsDropdownOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error);
+      // Still close dropdown even if logout fails
+      setIsDropdownOpen(false);
+    } finally {
+      setIsLoggingOut(false);
+    }
   };
 
   const getCodeforcesImageUrl = (cfusername, cfImageUrl) => {
@@ -112,8 +122,8 @@ const UserProfile = () => {
             Settings
           </button>
           <hr className="dropdown-divider" />
-          <button className="dropdown-item logout-item" onClick={handleLogout}>
-            Logout
+          <button className="dropdown-item logout-item" onClick={handleLogout} disabled={isLoggingOut}>
+            {isLoggingOut ? 'Logging out...' : 'Logout'}
           </button>
         </div>
       )}

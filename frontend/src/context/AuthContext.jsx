@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import config from '../config/env.js';
 
 const AuthContext = createContext();
 
@@ -28,7 +29,28 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
-  const logout = () => {
+  const logout = async () => {
+    if (user) {
+      try {
+        // Call backend logout endpoint
+        const response = await fetch(`${config.apiBaseUrl}/api/users/logout/${user.username}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+
+        if (response.ok) {
+          console.log('Logout successful on backend');
+        } else {
+          console.error('Backend logout failed:', response.status);
+        }
+      } catch (error) {
+        console.error('Logout request failed:', error);
+      }
+    }
+
+    // Clear frontend state regardless of backend response
     setUser(null);
     localStorage.removeItem('user');
   };
