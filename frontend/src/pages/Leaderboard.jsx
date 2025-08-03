@@ -1,161 +1,140 @@
 import React, { useState, useEffect } from 'react';
 import './Leaderboard.css';
+import ApiService from '../services/api';
 
 const Leaderboard = () => {
-  const [activeTab, setActiveTab] = useState('all'); // New state for active tab
+  const [activeTab, setActiveTab] = useState('codeforces'); // Default to first platform
+  const [activeSubTab, setActiveSubTab] = useState('overall'); // Default to overall ranking
   const [leaderboardData, setLeaderboardData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-
-  // Sample leaderboard data - replace with actual API data
-  const sampleData = [
-    // Codeforces users
-    {
-      rank: 1,
-      name: "Alice Johnson",
-      username: "alice_codes",
-      rating: 2150,
-      maxRating: 2200,
-      contestsParticipated: 45,
-      problemsSolved: 850,
-      platform: "Codeforces",
-      avatar: "https://via.placeholder.com/40/4ade80/ffffff?text=AJ",
-      institute: "IITG"
-    },
-    {
-      rank: 2,
-      name: "Bob Smith",
-      username: "bob_algorithms",
-      rating: 2080,
-      maxRating: 2120,
-      contestsParticipated: 38,
-      problemsSolved: 720,
-      platform: "Codeforces",
-      avatar: "https://via.placeholder.com/40/22c55e/ffffff?text=BS",
-      institute: "IITG"
-    },
-    {
-      rank: 8,
-      name: "Grace Wilson",
-      username: "grace_coder",
-      rating: 1650,
-      maxRating: 1700,
-      contestsParticipated: 28,
-      problemsSolved: 450,
-      platform: "Codeforces",
-      avatar: "https://via.placeholder.com/40/4ade80/ffffff?text=GW",
-      institute: "IITG"
-    },
-    // CodeChef users
-    {
-      rank: 3,
-      name: "Charlie Brown",
-      username: "charlie_cp",
-      rating: 1950,
-      maxRating: 2000,
-      contestsParticipated: 42,
-      problemsSolved: 680,
-      platform: "CodeChef",
-      avatar: "https://via.placeholder.com/40/16a34a/ffffff?text=CB",
-      institute: "IITG"
-    },
-    {
-      rank: 7,
-      name: "Henry Davis",
-      username: "henry_chef",
-      rating: 1720,
-      maxRating: 1750,
-      contestsParticipated: 25,
-      problemsSolved: 380,
-      platform: "CodeChef",
-      avatar: "https://via.placeholder.com/40/16a34a/ffffff?text=HD",
-      institute: "IITG"
-    },
-    // LeetCode users
-    {
-      rank: 4,
-      name: "Diana Prince",
-      username: "diana_debug",
-      rating: 1890,
-      maxRating: 1920,
-      contestsParticipated: 35,
-      problemsSolved: 620,
-      platform: "LeetCode",
-      avatar: "https://via.placeholder.com/40/15803d/ffffff?text=DP",
-      institute: "IITG"
-    },
-    {
-      rank: 9,
-      name: "Ivy Chen",
-      username: "ivy_leetcode",
-      rating: 1580,
-      maxRating: 1620,
-      contestsParticipated: 32,
-      problemsSolved: 420,
-      platform: "LeetCode",
-      avatar: "https://via.placeholder.com/40/15803d/ffffff?text=IC",
-      institute: "IITG"
-    },
-    // AtCoder users
-    {
-      rank: 5,
-      name: "Ethan Hunt",
-      username: "ethan_elite",
-      rating: 1820,
-      maxRating: 1870,
-      contestsParticipated: 40,
-      problemsSolved: 590,
-      platform: "AtCoder",
-      avatar: "https://via.placeholder.com/40/4ade80/ffffff?text=EH",
-      institute: "IITG"
-    },
-    {
-      rank: 6,
-      name: "Fiona Green",
-      username: "fiona_fast",
-      rating: 1780,
-      maxRating: 1800,
-      contestsParticipated: 30,
-      problemsSolved: 520,
-      platform: "AtCoder",
-      avatar: "https://via.placeholder.com/40/22c55e/ffffff?text=FG",
-      institute: "IITG"
-    },
-    {
-      rank: 10,
-      name: "Jack Robinson",
-      username: "jack_atcoder",
-      rating: 1520,
-      maxRating: 1580,
-      contestsParticipated: 22,
-      problemsSolved: 350,
-      platform: "AtCoder",
-      avatar: "https://via.placeholder.com/40/22c55e/ffffff?text=JR",
-      institute: "IITG"
-    }
-  ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(50); // Show 50 items per page
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // Contest-specific state
+  const [contests, setContests] = useState([]);
+  const [selectedContest, setSelectedContest] = useState(null);
+  const [contestStandings, setContestStandings] = useState([]);
+  const [contestLoading, setContestLoading] = useState(false);
 
   useEffect(() => {
-    // Initialize data
-    setLeaderboardData(sampleData);
-    setFilteredData(sampleData);
+    // Fetch leaderboard data and contests from API
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        // Fetch both leaderboard data and contests in parallel
+        const [leaderboardResponse, contestsResponse] = await Promise.all([
+          ApiService.fetchLeaderboardData(),
+          ApiService.fetchContests()
+        ]);
+        
+        console.log('Fetched leaderboard data:', leaderboardResponse);
+        console.log('Fetched contests:', contestsResponse);
+        
+        setLeaderboardData(leaderboardResponse);
+        setFilteredData(leaderboardResponse);
+        setContests(contestsResponse);
+        
+        // Set the most recent contest as default if available
+        if (contestsResponse && contestsResponse.length > 0) {
+          setSelectedContest(contestsResponse[0]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch data:', err);
+        setError(err.message || 'Failed to load data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // Fetch contest standings when contest is selected
   useEffect(() => {
-    // Filter data based on active tab only
-    let filtered = leaderboardData;
+    const fetchContestStandings = async () => {
+      if (activeSubTab === 'contest' && selectedContest) {
+        try {
+          setContestLoading(true);
+          const standings = await ApiService.fetchContestStandings(selectedContest.id);
+          console.log('Fetched contest standings:', standings);
+          console.log('First standing:', standings.standings?.[0]);
+          setContestStandings(standings.standings || []);
+        } catch (err) {
+          console.error('Failed to fetch contest standings:', err);
+          setContestStandings([]);
+        } finally {
+          setContestLoading(false);
+        }
+      }
+    };
+
+    fetchContestStandings();
+  }, [selectedContest, activeSubTab]);
+
+  useEffect(() => {
+    // Filter data based on active tab and sub-tab
+    let filtered = [];
     
-    // Filter by platform tab
-    if (activeTab !== 'all') {
-      filtered = filtered.filter(user => user.platform.toLowerCase() === activeTab.toLowerCase());
+    if (activeSubTab === 'contest' && contestStandings.length > 0) {
+      // Use contest standings data
+      filtered = contestStandings.filter(user => activeTab === 'codeforces'); // Since we only have Codeforces for now
+    } else {
+      // Use regular leaderboard data
+      filtered = leaderboardData.filter(user => user.platform.toLowerCase() === activeTab.toLowerCase());
+      
+      // Sort and rank based on sub-tab selection
+      if (activeSubTab === 'contest') {
+        // Contest-wise ranking: sort by contest rating and last contest rank
+        filtered = filtered
+          .sort((a, b) => {
+            // Primary sort by contest rating (descending)
+            if (a.contestRating !== b.contestRating) {
+              return b.contestRating - a.contestRating;
+            }
+            // Secondary sort by last contest rank (ascending - lower rank is better)
+            return a.lastContestRank - b.lastContestRank;
+          })
+          .map((user, index) => ({ ...user, rank: index + 1 }));
+      } else {
+        // Overall ranking: sort by overall rating
+        filtered = filtered
+          .sort((a, b) => b.rating - a.rating)
+          .map((user, index) => ({ ...user, rank: index + 1 }));
+      }
     }
     
-    // Re-rank the filtered data
-    const rankedData = filtered
-      .sort((a, b) => b.rating - a.rating)
-      .map((user, index) => ({ ...user, rank: index + 1 }));
+    setFilteredData(filtered);
+    setCurrentPage(1); // Reset to first page when filtering changes
+  }, [leaderboardData, contestStandings, activeTab, activeSubTab]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageData = filteredData.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    // Scroll to top when changing page
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const getVisiblePages = () => {
+    const maxVisiblePages = 5;
+    const half = Math.floor(maxVisiblePages / 2);
+    let start = Math.max(currentPage - half, 1);
+    let end = Math.min(start + maxVisiblePages - 1, totalPages);
     
-    setFilteredData(rankedData);
-  }, [leaderboardData, activeTab]);
+    if (end - start + 1 < maxVisiblePages) {
+      start = Math.max(end - maxVisiblePages + 1, 1);
+    }
+    
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  };
 
   const getRankBadgeClass = (rank) => {
     if (rank === 1) return 'rank-badge gold';
@@ -176,12 +155,53 @@ const Leaderboard = () => {
   };
 
   const tabs = [
-    { id: 'all', name: 'All Platforms', icon: '🌐', color: '#4ade80' },
-    { id: 'codeforces', name: 'Codeforces', icon: '🔵', color: '#1f8ef1' },
-    { id: 'codechef', name: 'CodeChef', icon: '🍳', color: '#5b4638' },
-    { id: 'leetcode', name: 'LeetCode', icon: '🟡', color: '#ffa116' },
-    { id: 'atcoder', name: 'AtCoder', icon: '🟠', color: '#3c4043' }
+    { id: 'codeforces', name: 'Codeforces' }
+    // Note: Other platforms will be added when their data becomes available
+    // { id: 'codechef', name: 'CodeChef' },
+    // { id: 'leetcode', name: 'LeetCode' },
+    // { id: 'atcoder', name: 'AtCoder' }
   ];
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="leaderboard-container">
+        <div className="leaderboard-header">
+          <h1 className="leaderboard-title">🏆 Leaderboard</h1>
+          <p className="leaderboard-subtitle">Loading leaderboard data...</p>
+        </div>
+        <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Fetching latest rankings...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="leaderboard-container">
+        <div className="leaderboard-header">
+          <h1 className="leaderboard-title">🏆 Leaderboard</h1>
+          <p className="leaderboard-subtitle">Error loading data</p>
+        </div>
+        <div className="error-container">
+          <div className="error-content">
+            <span className="error-icon">⚠️</span>
+            <span className="error-text">Failed to load leaderboard data</span>
+            <span className="error-details">{error}</span>
+            <button 
+              className="retry-button"
+              onClick={() => window.location.reload()}
+            >
+              Retry
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="leaderboard-container">
@@ -190,42 +210,86 @@ const Leaderboard = () => {
         <p className="leaderboard-subtitle">Top performers in competitive programming</p>
       </div>
 
-      {/* Platform Tabs */}
-      <div className="platform-tabs">
-        {tabs.map((tab) => (
+      {/* Combined Tabs Container */}
+      <div className="tabs-container">
+        {/* Platform Tabs */}
+        <div className="platform-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className="tab-name">{tab.name}</span>
+              <span className="tab-count">
+                {leaderboardData.filter(user => user.platform.toLowerCase() === tab.id.toLowerCase()).length}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {/* Sub-tabs for Ranking Type */}
+        <div className="sub-tabs">
           <button
-            key={tab.id}
-            className={`tab-button ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-            style={{
-              '--tab-color': tab.color,
-              '--tab-color-hover': tab.color + '20'
-            }}
+            className={`sub-tab-button ${activeSubTab === 'overall' ? 'active' : ''}`}
+            onClick={() => setActiveSubTab('overall')}
           >
-            <span className="tab-icon">{tab.icon}</span>
-            <span className="tab-name">{tab.name}</span>
-            <span className="tab-count">
-              {tab.id === 'all' 
-                ? leaderboardData.length 
-                : leaderboardData.filter(user => user.platform.toLowerCase() === tab.id.toLowerCase()).length
-              }
-            </span>
+            <span className="sub-tab-icon">📊</span>
+            <span className="sub-tab-name">Overall Ranking</span>
           </button>
-        ))}
+          <button
+            className={`sub-tab-button ${activeSubTab === 'contest' ? 'active' : ''}`}
+            onClick={() => setActiveSubTab('contest')}
+          >
+            <span className="sub-tab-icon">🏁</span>
+            <span className="sub-tab-name">Contest Wise</span>
+          </button>
+        </div>
       </div>
 
-      {/* Results Count */}
-      <div className="results-info">
-        <span className="results-count">
-          Showing {filteredData.length} of {activeTab === 'all' 
-            ? leaderboardData.length 
-            : leaderboardData.filter(user => user.platform.toLowerCase() === activeTab.toLowerCase()).length
-          } participants
-          {activeTab !== 'all' && (
-            <span className="active-filter"> on {tabs.find(tab => tab.id === activeTab)?.name}</span>
-          )}
-        </span>
-      </div>
+      {/* Contest Selection Dropdown - Show only when contest tab is active */}
+      {activeSubTab === 'contest' && (
+        <div className="contest-selection">
+          <div className="contest-dropdown-container">
+            <label htmlFor="contest-select" className="contest-label">
+              <span className="contest-icon">🏆</span>
+              Select Contest:
+            </label>
+            <select
+              id="contest-select"
+              className="contest-dropdown"
+              value={selectedContest?.id || ''}
+              onChange={(e) => {
+                const contest = contests.find(c => c.id === parseInt(e.target.value));
+                setSelectedContest(contest);
+              }}
+            >
+              <option value="">Choose a contest...</option>
+              {contests.map((contest) => (
+                <option key={contest.id} value={contest.id}>
+                  {contest.name} - {new Date(contest.startTimeSeconds * 1000).toLocaleDateString()}
+                </option>
+              ))}
+            </select>
+            {selectedContest && (
+              <div className="contest-info">
+                <span className="contest-date">
+                  📅 {new Date(selectedContest.startTimeSeconds * 1000).toLocaleString()}
+                </span>
+                <span className="contest-duration">
+                  ⏱️ {Math.floor(selectedContest.durationSeconds / 3600)}h {Math.floor((selectedContest.durationSeconds % 3600) / 60)}m
+                </span>
+                <span className="contest-type">
+                  🏷️ {selectedContest.type}
+                </span>
+                <span className="contest-participants">
+                  👥 {filteredData.length} participants from our institute
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Leaderboard Table */}
       <div className="table-container">
@@ -234,19 +298,47 @@ const Leaderboard = () => {
             <tr>
               <th className="rank-column">Rank</th>
               <th className="user-column">User</th>
-              <th className="rating-column">Current Rating</th>
-              <th className="max-rating-column">Max Rating</th>
-              <th className="contests-column">Contests</th>
-              <th className="problems-column">Problems</th>
+              {activeSubTab === 'contest' && selectedContest ? (
+                <>
+                  <th className="rank-column">Global Rank</th>
+                  <th className="rank-column">Institute Rank</th>
+                  <th className="score-column">Score</th>
+                  <th className="solved-column">Solved Problems</th>
+                  <th className="time-column">Total Time</th>
+                </>
+              ) : activeSubTab === 'contest' ? (
+                <>
+                  <th className="rating-column">Contest Rating</th>
+                  <th className="rating-column">Overall Rating</th>
+                  <th className="contests-column">Last Contest Rank</th>
+                  <th className="contests-column">Contests</th>
+                </>
+              ) : (
+                <>
+                  <th className="rating-column">Current Rating</th>
+                  <th className="max-rating-column">Max Rating</th>
+                  <th className="contests-column">Contests</th>
+                  <th className="problems-column">Problems</th>
+                </>
+              )}
             </tr>
           </thead>
           <tbody>
-            {filteredData.length > 0 ? (
-              filteredData.map((user, index) => (
-                <tr key={user.username} className="table-row">
+            {contestLoading && activeSubTab === 'contest' && selectedContest ? (
+              <tr>
+                <td colSpan="6" className="loading-cell">
+                  <div className="loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>Loading contest standings...</p>
+                  </div>
+                </td>
+              </tr>
+            ) : currentPageData.length > 0 ? (
+              currentPageData.map((user, index) => (
+                <tr key={user.username || user.handle} className="table-row">
                   <td className="rank-cell">
-                    <div className={getRankBadgeClass(user.rank)}>
-                      {user.rank === 1 ? '🥇' : user.rank === 2 ? '🥈' : user.rank === 3 ? '🥉' : user.rank}
+                    <div className={getRankBadgeClass(user.instituteRank || user.rank)}>
+                      {(user.instituteRank || user.rank) === 1 ? '🥇' : (user.instituteRank || user.rank) === 2 ? '🥈' : (user.instituteRank || user.rank) === 3 ? '🥉' : (user.instituteRank || user.rank)}
                     </div>
                   </td>
                   <td className="user-cell">
@@ -256,43 +348,151 @@ const Leaderboard = () => {
                         alt={user.name}
                         className="user-avatar"
                         onError={(e) => {
-                          e.target.src = `https://via.placeholder.com/40/4ade80/ffffff?text=${user.name.charAt(0)}`;
+                          e.target.src = `https://via.placeholder.com/40/4ade80/ffffff?text=${(user.name || user.handle).charAt(0)}`;
                         }}
                       />
                       <div className="user-details">
                         <span className="user-name">{user.name}</span>
-                        <span className="user-username">@{user.username}</span>
-                        <span className="user-institute">{user.institute}</span>
+                        <span className="user-username">@{user.username || user.handle}</span>
+                        <span className="user-institute">{user.institute || 'Unknown'}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="rating-cell">
-                    <span className="current-rating">{user.rating}</span>
-                  </td>
-                  <td className="max-rating-cell">
-                    <span className="max-rating">{user.maxRating}</span>
-                  </td>
-                  <td className="contests-cell">
-                    <span className="contests-count">{user.contestsParticipated}</span>
-                  </td>
-                  <td className="problems-cell">
-                    <span className="problems-count">{user.problemsSolved}</span>
-                  </td>
+                  {activeSubTab === 'contest' && selectedContest ? (
+                    <>
+                      <td className="global-rank-cell">
+                        <span className="global-rank">#{user.globalRank || user.rank}</span>
+                        <span className="global-rank-label">global</span>
+                      </td>
+                      <td className="institute-rank-cell">
+                        <span className="institute-rank">#{user.instituteRank || user.rank}</span>
+                        <span className="institute-rank-label">institute</span>
+                      </td>
+                      <td className="score-cell">
+                        <span className="contest-score">{user.points || 0}</span>
+                      </td>
+                      <td className="solved-cell">
+                        <div className="solved-problems">
+                          {user.solvedProblems && user.solvedProblems.length > 0 ? (
+                            <div className="problem-badges">
+                              {user.solvedProblems.map((problemIndex, idx) => (
+                                <span key={idx} className="problem-badge solved">
+                                  {problemIndex}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="no-problems">-</span>
+                          )}
+                          <span className="solved-count">({user.solvedCount || 0} solved)</span>
+                        </div>
+                      </td>
+                      <td className="time-cell">
+                        <span className="total-time">{user.totalTime || 0}m</span>
+                      </td>
+                    </>
+                  ) : activeSubTab === 'contest' ? (
+                    <>
+                      <td className="rating-cell">
+                        <span className="current-rating">{user.contestRating}</span>
+                      </td>
+                      <td className="rating-cell">
+                        <span className="overall-rating">{user.rating}</span>
+                      </td>
+                      <td className="contests-cell">
+                        <span className="last-contest-rank">#{user.lastContestRank}</span>
+                      </td>
+                      <td className="contests-cell">
+                        <span className="contests-count">{user.contestsParticipated}</span>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td className="rating-cell">
+                        <span className="current-rating">{user.rating}</span>
+                      </td>
+                      <td className="max-rating-cell">
+                        <span className="max-rating">{user.maxRating}</span>
+                      </td>
+                      <td className="contests-cell">
+                        <span className="contests-count">{user.contestsParticipated}</span>
+                      </td>
+                      <td className="problems-cell">
+                        <span className="problems-count">{user.problemsSolved}</span>
+                      </td>
+                    </>
+                  )}
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" className="no-results">
+                <td colSpan={activeSubTab === 'contest' && selectedContest ? '6' : '6'} className="no-results">
                   <div className="no-results-content">
                     <span className="no-results-icon">🔍</span>
-                    <span className="no-results-text">No participants match the current filters</span>
-                    <span className="no-results-suggestion">Try adjusting the filter criteria</span>
+                    <span className="no-results-text">
+                      {activeSubTab === 'contest' && !selectedContest ? 
+                        'Please select a contest to view standings' : 
+                        'No participants match the current filters'
+                      }
+                    </span>
+                    <span className="no-results-suggestion">
+                      {activeSubTab === 'contest' && !selectedContest ? 
+                        'Choose from the dropdown above' : 
+                        'Try adjusting the filter criteria'
+                      }
+                    </span>
                   </div>
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+      </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          <button
+            className={`pagination-button ${currentPage === 1 ? 'disabled' : ''}`}
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            <span>← Previous</span>
+          </button>
+
+          <div className="page-numbers">
+            {getVisiblePages().map(page => (
+              <button
+                key={page}
+                className={`page-number ${currentPage === page ? 'active' : ''}`}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className={`pagination-button ${currentPage === totalPages ? 'disabled' : ''}`}
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            <span>Next →</span>
+          </button>
+
+          <div className="pagination-info">
+            Showing {startIndex + 1}-{Math.min(endIndex, filteredData.length)} of {filteredData.length}
+          </div>
+        </div>
+      )}
+
+      {/* Results Count - Fixed position box */}
+      <div className="results-info">
+        <span className="results-count">
+          {filteredData.length} participants
+          <br />
+          <span className="active-filter">{tabs.find(tab => tab.id === activeTab)?.name}</span>
+        </span>
       </div>
 
       {/* Statistics Footer */}
