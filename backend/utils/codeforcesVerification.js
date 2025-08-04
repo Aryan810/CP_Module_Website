@@ -7,7 +7,7 @@ async function verifyCodeforcesUsername(cfusername) {
     try {
         const response = await fetch(`https://codeforces.com/api/user.info?handles=${cfusername}`);
         
-        if (!response.ok) {
+        if (!response.ok){
             if (response.status >= 500) {
                 return { exists: false, error: 'CF API not working' };
             }

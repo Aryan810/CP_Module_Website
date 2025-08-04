@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
     if (user) {
       try {
         // Call backend logout endpoint
-        const response = await fetch(`${config.apiBaseUrl}/api/users/logout/${user.username}`, {
+        const response = await fetch(`${config.apiBaseUrl}/users/logout/${user.username}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

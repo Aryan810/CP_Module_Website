@@ -1,6 +1,7 @@
 // API service for making HTTP requests
 
-const API_BASE_URL = 'http://localhost:3005/api';
+// Use environment variable if available, otherwise use relative path for production
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.MODE === 'development' ? 'http://localhost:3001/api' : '/api');
 
 class ApiService {
   async fetchLeaderboardData() {
