@@ -49,9 +49,9 @@ const Login = () => {
     if (validateForm()) {
       try {
         console.log('Attempting login for:', formData.username);
-        console.log('API URL:', `${config.apiBaseUrl}/api/users/login/${formData.username}`);
+        console.log('API URL:', `${config.apiBaseUrl}/users/login/${formData.username}`);
         
-        const response = await fetch(`${config.apiBaseUrl}/api/users/login/${formData.username}`, {
+        const response = await fetch(`${config.apiBaseUrl}/users/login/${formData.username}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

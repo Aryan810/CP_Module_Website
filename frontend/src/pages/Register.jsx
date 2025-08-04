@@ -74,7 +74,7 @@ const Register = () => {
       
       try {
         // Send POST request to backend API
-        const response = await fetch(`${config.apiBaseUrl}/api/users/`, {
+        const response = await fetch(`${config.apiBaseUrl}/users/`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
