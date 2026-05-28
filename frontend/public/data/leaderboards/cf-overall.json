@@ -1,0 +1,14 @@
+{
+  "id": "cf-overall",
+  "name": "Codeforces — Overall Rating",
+  "description": "All registered users sorted by Codeforces rating. Pulled live from the CF API.",
+  "source": "all-users",
+  "columns": [
+    { "header": "Name",        "expr": "name" },
+    { "header": "CF Handle",   "expr": "cfusername" },
+    { "header": "Rating",      "expr": "default(cf_rating, 0)" },
+    { "header": "Max Rating",  "expr": "default(cf_max_rating, 0)" },
+    { "header": "Rank",        "expr": "default(cf_rank, \"unrated\")" }
+  ],
+  "sort": { "expr": "default(cf_rating, 0)", "direction": "desc" }
+}

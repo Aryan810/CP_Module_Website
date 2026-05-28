@@ -1,7 +1,7 @@
 {
-  "name": "cp-website",
+  "name": "cp-hub",
   "version": "1.0.0",
-  "description": "Competitive Programming Website - Full Stack",
+  "description": "CP-Hub — IIT Guwahati Coding Club website",
   "scripts": {
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
@@ -9,7 +9,7 @@
     "dev:backend": "cd backend && npm start",
     "install:all": "cd frontend && npm install && cd ../backend && npm install"
   },
-  "keywords": ["competitive-programming", "react", "express", "mongodb"],
+  "keywords": ["competitive-programming", "react", "firebase", "cp-hub"],
   "author": "CodingClub-IITG",
   "license": "MIT"
 }

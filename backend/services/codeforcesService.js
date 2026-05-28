@@ -179,41 +179,14 @@ async function fetchUserContestHistory(handle) {
 }
 
 /**
- * Update user's Codeforces data in database
- * @param {string} cfusername - Codeforces username
- * @param {Object} User - Mongoose User model
- * @returns {Promise<boolean>} Success status
+ * Update user's Codeforces data in database (DEPRECATED — used by old Mongo
+ * cfUpdate route; new Firestore-backed cfUpdate handles this inline).
  */
-async function updateUserCodeforcesData(cfusername, User) {
-    try {
-        const cfProfile = await fetchCodeforcesUserProfile(cfusername);
-        
-        if (cfProfile) {
-            await User.findOneAndUpdate(
-                { cfusername: cfusername },
-                {
-                    cfImageUrl: cfProfile.avatar,
-                    // You can add more fields if needed
-                    // cfRating: cfProfile.rating,
-                    // cfMaxRating: cfProfile.maxRating,
-                    // cfRank: cfProfile.rank,
-                    // cfMaxRank: cfProfile.maxRank
-                }
-            );
-            return true;
-        }
-        
-        return false;
-    } catch (error) {
-        console.error(`Error updating Codeforces data for ${cfusername}:`, error);
-        return false;
-    }
-}
+async function updateUserCodeforcesData() { return false; }
 
 module.exports = {
     fetchCodeforcesUserProfile,
     fetchCodeforcesContests,
     fetchContestStandings,
-    fetchUserContestHistory,
-    updateUserCodeforcesData
+    fetchUserContestHistory
 };

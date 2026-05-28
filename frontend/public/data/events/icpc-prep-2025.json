@@ -1,0 +1,14 @@
+{
+  "slug": "icpc-prep-2025",
+  "title": "ICPC Prep Sprint 2025",
+  "date": "2026-09-01T19:00:00+05:30",
+  "location": "Online — Discord + Codeforces",
+  "banner": "",
+  "images": [],
+  "tags": ["icpc", "training"],
+  "shortDescription": "Four week prep sprint for the regionals.",
+  "body": "Weekly virtual contests, editorials and team formation help. Sign up via the Discord link.",
+  "links": [
+    { "label": "Discord", "url": "https://discord.gg/" }
+  ]
+}

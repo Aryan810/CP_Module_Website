@@ -15,9 +15,10 @@ backend/.env
 backend/scripts
 frontend/.env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+backend/serviceAccountKey.json
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
 
 # Package lock files
 backend/package-lock.json

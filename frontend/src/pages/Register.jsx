@@ -1,124 +1,46 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import config from '../config/env.js';
 import './Register.css';
 
 const Register = () => {
-  const { login } = useAuth();
+  const { register, firebaseConfigured } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    cfusername: '',
-    password: '',
-    confirmPassword: ''
+    username: '', email: '', cfusername: '', name: '',
+    password: '', confirmPassword: '',
   });
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    setFormData((p) => ({ ...p, [name]: value }));
+    if (errors[name]) setErrors((p) => ({ ...p, [name]: '' }));
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.username.trim()) {
-      newErrors.username = 'Username is required';
-    } else if (formData.username.length < 3) {
-      newErrors.username = 'Username must be at least 3 characters';
-    }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!formData.email.endsWith('@iitg.ac.in')) {
-      newErrors.email = 'Email must be from IIT Guwahati domain (@itg.ac.in)';
-    }
-    
-    if (!formData.cfusername.trim()) {
-      newErrors.cfusername = 'Codeforces username is required';
-    } else if (formData.cfusername.length < 3) {
-      newErrors.cfusername = 'Codeforces username must be at least 3 characters';
-    }
-    
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-    
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsSubmitting(true);
-      
-      try {
-        // Send POST request to backend API
-        const response = await fetch(`${config.apiBaseUrl}/users/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.username,
-            email: formData.email,
-            password: formData.password,
-            role: 'user', // Default role for registration
-            cfusername: formData.cfusername, // Using separate cfusername field
-            name: formData.username // Using username as default name
-          })
-        });
+  const validate = () => {
+    const e = {};
+    if (!formData.username.trim() || formData.username.length < 3) e.username = 'At least 3 chars';
+    if (!formData.email.trim()) e.email = 'Email is required';
+    if (!formData.cfusername.trim()) e.cfusername = 'Codeforces handle required';
+    if (!formData.password || formData.password.length < 6) e.password = 'At least 6 chars';
+    if (formData.password !== formData.confirmPassword) e.confirmPassword = 'Passwords do not match';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
-        if (response.ok) {
-          const userData = await response.json();
-          console.log('Registration successful:', userData);
-          
-          // Auto-login after successful registration
-          login(userData.user);
-          navigate('/');
-          
-        } else {
-          console.log('Registration failed with status:', response.status);
-          const responseText = await response.text();
-          console.log('Error response:', responseText);
-          
-          try {
-            const errorData = JSON.parse(responseText);
-            console.log('Parsed error data:', errorData);
-            
-            // Show the actual error message from the server
-            setErrors({ submit: errorData.message || 'Registration failed. Please check your information.' });
-          } catch (parseError) {
-            console.error('Failed to parse error response:', parseError);
-            setErrors({ submit: `Server error: ${response.status}` });
-          }
-        }
-      } catch (error) {
-        console.error('Registration error:', error);
-        setErrors({ submit: 'Network error. Please check your connection and try again.' });
-      } finally {
-        setIsSubmitting(false);
-      }
+  const handleSubmit = async (ev) => {
+    ev.preventDefault();
+    if (!validate()) return;
+    setSubmitting(true);
+    try {
+      await register(formData);
+      navigate('/');
+    } catch (err) {
+      setErrors({ submit: err.message || 'Registration failed' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -127,99 +49,69 @@ const Register = () => {
       <div className="auth-form-wrapper">
         <div className="auth-card">
           <div className="auth-header">
-            <h1 className="auth-title">Create Account</h1>
-            <p className="auth-subtitle">Join our competitive programming community</p>
+            <h1 className="auth-title">Join CP-Hub</h1>
+            <p className="auth-subtitle">Create your account</p>
           </div>
+
+          {!firebaseConfigured && (
+            <div className="error-message" style={{ marginBottom: '1rem' }}>
+              Firebase is not configured. See <code>FIREBASE_SETUP.md</code>.
+            </div>
+          )}
 
           <form className="auth-form register-form-layout" onSubmit={handleSubmit}>
             <div className="form-columns-container">
-              {/* Left Column - Personal Details */}
               <div className="form-column form-column-left">
                 <div className="form-group">
-                  <label htmlFor="username" className="form-label">Username</label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
+                  <label className="form-label">Username</label>
+                  <input name="username" value={formData.username} onChange={handleChange}
                     className={`form-input ${errors.username ? 'input-error' : ''}`}
-                    placeholder="Choose a username"
-                  />
+                    placeholder="Choose a username" />
                   {errors.username && <span className="error-message">{errors.username}</span>}
                 </div>
-
                 <div className="form-group">
-                  <label htmlFor="email" className="form-label">Email</label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={`form-input ${errors.email ? 'input-error' : ''}`}
-                    placeholder="your.name@iitg.ac.in"
-                  />
-                  {errors.email && <span className="error-message">{errors.email}</span>}
-                  <span className="form-helper-text">Only IIT Guwahati email addresses are allowed</span>
+                  <label className="form-label">Full Name</label>
+                  <input name="name" value={formData.name} onChange={handleChange}
+                    className="form-input" placeholder="(optional)" />
                 </div>
-
                 <div className="form-group">
-                  <label htmlFor="cfusername" className="form-label">Codeforces Username</label>
-                  <input
-                    type="text"
-                    id="cfusername"
-                    name="cfusername"
-                    value={formData.cfusername}
-                    onChange={handleInputChange}
+                  <label className="form-label">Email</label>
+                  <input type="email" name="email" value={formData.email} onChange={handleChange}
+                    className={`form-input ${errors.email ? 'input-error' : ''}`}
+                    placeholder="you@iitg.ac.in" />
+                  {errors.email && <span className="error-message">{errors.email}</span>}
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Codeforces Handle</label>
+                  <input name="cfusername" value={formData.cfusername} onChange={handleChange}
                     className={`form-input ${errors.cfusername ? 'input-error' : ''}`}
-                    placeholder="Your Codeforces handle"
-                  />
+                    placeholder="Your CF handle" />
                   {errors.cfusername && <span className="error-message">{errors.cfusername}</span>}
-                  <span className="form-helper-text">Enter your existing Codeforces username</span>
                 </div>
               </div>
 
-              {/* Right Column - Security Details */}
               <div className="form-column form-column-right">
                 <div className="form-group">
-                  <label htmlFor="password" className="form-label">Password</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
+                  <label className="form-label">Password</label>
+                  <input type="password" name="password" value={formData.password} onChange={handleChange}
                     className={`form-input ${errors.password ? 'input-error' : ''}`}
-                    placeholder="Create a strong password"
-                  />
+                    placeholder="At least 6 characters" />
                   {errors.password && <span className="error-message">{errors.password}</span>}
                 </div>
-
                 <div className="form-group">
-                  <label htmlFor="confirmPassword" className="form-label">Confirm Password</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
+                  <label className="form-label">Confirm Password</label>
+                  <input type="password" name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
                     className={`form-input ${errors.confirmPassword ? 'input-error' : ''}`}
-                    placeholder="Confirm your password"
-                  />
+                    placeholder="Confirm" />
                   {errors.confirmPassword && <span className="error-message">{errors.confirmPassword}</span>}
                 </div>
-
-                {/* Empty div to balance the layout */}
-                <div className="form-group form-group-spacer"></div>
               </div>
             </div>
 
             <div className="form-submit-section">
-              <button type="submit" className="btn-auth-primary" disabled={isSubmitting}>
-                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+              <button type="submit" className="btn-auth-primary" disabled={submitting}>
+                {submitting ? 'Creating…' : 'Create Account'}
               </button>
-              
               {errors.submit && (
                 <div className="error-message" style={{ textAlign: 'center', marginTop: '1rem' }}>
                   {errors.submit}
@@ -230,10 +122,7 @@ const Register = () => {
 
           <div className="auth-footer">
             <p className="auth-redirect-text">
-              Already have an account?{' '}
-              <Link to="/login" className="auth-redirect-link">
-                Sign in here
-              </Link>
+              Already have an account? <Link to="/login" className="auth-redirect-link">Sign in</Link>
             </p>
           </div>
         </div>
