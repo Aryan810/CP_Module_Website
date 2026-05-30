@@ -6,6 +6,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 :root {
+  color-scheme: dark;
   /* ── Surfaces (dark) ───────────────────────────────── */
   --bg:              #0a0a0b;
   --surface:         #111214;
@@ -264,14 +265,21 @@ code {
 
 /* ── Reusable: form inputs ───────────────────────────── */
 .form-input,
+input:not([type]),
 input[type='text'],
 input[type='email'],
 input[type='password'],
 input[type='datetime-local'],
 input[type='date'],
+input[type='time'],
+input[type='month'],
+input[type='week'],
 input[type='number'],
 input[type='search'],
 input[type='url'],
+input[type='tel'],
+input[type='color'],
+input[type='file'],
 textarea,
 select {
   width: 100%;
@@ -285,15 +293,95 @@ select {
   transition: border-color var(--t-fast), box-shadow var(--t-fast);
   outline: none;
 }
-.form-input:focus, input:focus, textarea:focus, select:focus {
+.form-input:focus,
+input:not([type]):focus,
+input[type='text']:focus,
+input[type='email']:focus,
+input[type='password']:focus,
+input[type='datetime-local']:focus,
+input[type='date']:focus,
+input[type='time']:focus,
+input[type='month']:focus,
+input[type='week']:focus,
+input[type='number']:focus,
+input[type='search']:focus,
+input[type='url']:focus,
+input[type='tel']:focus,
+textarea:focus,
+select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
+input::placeholder, textarea::placeholder { color: var(--text-dim); opacity: 1; }
+input[type='checkbox'], input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  flex-shrink: 0;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+input[type='radio'] { border-radius: 50%; }
+input[type='checkbox']:hover, input[type='radio']:hover { border-color: var(--accent); }
+input[type='checkbox']:checked, input[type='radio']:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px; top: 0px;
+  width: 5px; height: 10px;
+  border: solid var(--text-on-accent, #0a0a0b);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+input[type='radio']:checked::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--text-on-accent, #0a0a0b);
+}
+input[type='checkbox']:focus-visible, input[type='radio']:focus-visible {
+  box-shadow: 0 0 0 3px var(--accent-soft);
+  outline: none;
+}
+input[type='file'] { padding: 0.4rem 0.6rem; }
+input[type='file']::file-selector-button {
+  background: var(--surface-1); color: var(--text); border: 1px solid var(--border);
+  border-radius: var(--r-sm); padding: 0.35rem 0.7rem; margin-right: 0.6rem; cursor: pointer;
+  font: inherit;
+}
+input[type='file']::file-selector-button:hover { background: var(--surface-2); border-color: var(--border-strong); }
+
+/* Autofill: WebKit forces a white/yellow bg — override it. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  -webkit-text-fill-color: var(--text);
+  -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset;
+  caret-color: var(--text);
+  transition: background-color 9999s ease-in-out 0s;
+}
 textarea { resize: vertical; min-height: 80px; font-family: inherit; }
 select { appearance: none; padding-right: 2rem;
+  background-color: var(--surface);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239aa0a6'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 0.75rem center;
 }
+select option { background: var(--surface); color: var(--text); }
 input:disabled, select:disabled, textarea:disabled { opacity: 0.6; cursor: not-allowed; }
 label { display: block; font-size: 0.82rem; color: var(--text-muted); }
 
