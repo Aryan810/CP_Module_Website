@@ -95,7 +95,12 @@ const Profile = () => {
 
   useEffect(() => {
     if (!user?.cfusername) return;
-    Api.cfFull(user.cfusername).then((r) => setCf(r.cf)).catch(() => setCf(null));
+    Api.cfFull(user.cfusername)
+      .then((r) => { setCf(r.cf); setMsg(''); })
+      .catch((e) => {
+        setCf(null);
+        setMsg(`Could not load Codeforces data for "${user.cfusername}": ${e.message}`);
+      });
   }, [user?.cfusername]);
 
   useEffect(() => {
