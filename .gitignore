@@ -9,15 +9,19 @@ yarn-error.log*
 # Test folder
 test/
 
-# Environment variables
+# Environment variables (secrets - never commit!)
 .env
+.env.*
+!.env.example
 backend/.env
 backend/scripts
-frontend/.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+backend/serviceAccountKey.json
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+
+# Vercel
+.vercel
 
 # Package lock files
 backend/package-lock.json
@@ -66,7 +70,7 @@ jspm_packages/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+# .env
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -111,3 +115,4 @@ Desktop.ini
 # Build directories
 build/
 dist/
+DEPLOY.md

@@ -7,7 +7,7 @@ const config = {
   apiBaseUrl: import.meta.env.VITE_API_BASE_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3001/api'),
   
   // App configuration (accessible because of VITE_ prefix)
-  appTitle: import.meta.env.VITE_APP_TITLE || 'CodeWars',
+  appTitle: import.meta.env.VITE_APP_TITLE || 'CP-Hub',
   
   // These are always available in Vite (no VITE_ prefix needed)
   isDevelopment: import.meta.env.DEV,

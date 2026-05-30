@@ -1,85 +1,105 @@
-# CP Website TODO list ->
+# CP-Hub
 
-## 13 July, 2025
+The IIT Guwahati Coding Club website — events, leaderboards, profiles and a Codeforces dashboard, all editable by club admins.
 
-### Project Overview (What we've done so far)
+## Stack
 
-**Backend:**
-- Authentication system with MongoDB
-- Password hashing
-- User registration and login/logout APIs
-- Codeforces data fetching setup
-- Express.js server
+- **Frontend**: React 19 + Vite + React Router (`frontend/`)
+- **Backend**: Node.js + Express (`backend/`) — thin auth + Firestore proxy
+- **Auth / data**: Firebase Auth + Cloud Firestore (+ optional Storage)
+- **External**: Codeforces public API for live rating data; clist.by for the contest calendar
 
-**Frontend:**
-- React 19 + Vite 7 setup
-- Login and register pages
-- Basic form validation and routing
-- Responsive design
+## Project layout
 
-**Status:** Auth works, forms are done, need to build profile page next.
+```
+.
+├── frontend/
+│   ├── public/data/        ← editable site content (committed JSON)
+│   │   ├── site.json
+│   │   ├── home.json
+│   │   ├── events/         (index.json + one file per event)
+│   │   └── leaderboards/   (index.json + one file per board)
+│   └── src/
+│       ├── pages/          (Home, Events, EventDetail, Leaderboard, Profile, Login, Register, …)
+│       ├── pages/admin/    (admin dashboards: events, leaderboards)
+│       ├── components/     (Navbar, UserProfile, RouteGuards, …)
+│       ├── context/        (AuthContext — Firebase Auth wrapper)
+│       ├── services/api.js (single API client + static loaders)
+│       ├── leaderboardDsl.js  ← tiny safe DSL used by leaderboard configs
+│       └── firebase.js     (frontend Firebase init)
+├── backend/
+│   ├── routes/             (users, events, leaderboards, codeforces, cfUpdate)
+│   ├── middleware/auth.js  (verifyAuth + requireAdmin via Firebase ID tokens)
+│   ├── firebase.js         (firebase-admin init from service account)
+│   └── services/           (Codeforces fetchers)
+├── firestore.rules         ← paste into Firebase console
+├── FIREBASE_SETUP.md       ← one-time setup walkthrough (read first!)
+└── TODO_HISTORY.md         (old project notes)
+```
 
-### Today's tasks (13 July)
+## Editable content
 
-**Frontend:**
-- [x] Remove login/register buttons when user is logged in
-- [x] Add user profile section in navbar (right side)
-- [x] Show user's name and Codeforces profile image
-- [x] Handle login/logout state properly
-- [ ] Build leaderboard page with filtering options (contests and platform.)
-- [ ] Add dropdown/select components for contest and platform selection.
-- [ ] Display user rankings in a nice table format (COLOR - gold for 1st, silver for 2nd, bronze for 3rd)
-- [ ] Fetch leaderboard data from backend APIs (specify which ranklist you want.)
+Anything under `frontend/public/data/` is editable just by editing JSON and redeploying. To add a new event:
 
-**Backend:**
-- [ ] Make sure user data includes Codeforces image URL
-- [ ] API endpoint for leaderboard data (contest-specific rankings)
-- [ ] API for platform-wise rankings (Codeforces, etc.)
-- [ ] Overall ranking algorithm and API endpoint
-- [ ] Scheduled function to fetch contest results when contests end (on some platform)
-- [ ] Use Codeforces calendar API to track contest schedules
-- [ ] Auto-fetch user ranks and questions solved after each contest (once codeforces API starts to work.)
-- [ ] Ranking algorithm to calculate overall scores (TBD).
+1. Create `frontend/public/data/events/my-event.json` (use the existing ones as a template).
+2. Add its filename to `frontend/public/data/events/index.json`.
 
-# ----------------------------------------------------------------
+Admins can also add events live from `/admin/events` — those are stored in Firestore and merged into the same listing (Firestore wins on slug conflict).
 
-## 12 July, 2025
+## Leaderboard DSL
 
-### Frontend Migration to Vite (COMPLETED)
-#### -> Successfully migrated from Create React App to Vite
-#### -> Updated all React components to use .jsx extensions for better Vite compatibility
-#### -> Configured Vite with React plugin, port 3000, and build output to 'build' directory
-#### -> All existing functionality preserved: routing, authentication UI, responsive design
-#### -> Development server now starts faster with hot module replacement
+Each leaderboard config defines columns and a sort rule using a tiny expression language. Per-user fields available:
 
-# ----------------------------------------------------------------
+```
+name, username, email, cfusername,
+cf_rating, cf_max_rating, cf_rank, cf_max_rank,
+extras.<any-key>     ← admin-set custom values (e.g. bonus points)
+```
 
-## 11 July, 2025
+Supported syntax: literals, identifiers, `+ - * / %`, comparisons, `&&`, `||`, `!`, ternary `a ? b : c`, function calls, property access.
 
-### 1: frontend - building a basic profile page in frontend.
-#### -> show Name, Rating, Max-rating, Image, Designation, etc.
+Built-ins: `max, min, if, len, upper, lower, concat, round, sum, default, contains`.
 
-### 2: backend - make a API endpoint which fetches user details from codeforces (for now) and if frontend makes a request at it. it returns that. (DONE)
-#### -> also make a role based authentication system. which uses mongoDB to store user details and password is hashed for security. (DONE)
-#### -> login/logout functionality (DONE)..only now we need to sync them in frontend.
-#### -> migrated frontend from Create React App (CRA) to Vite for better performance and modern tooling. (DONE)
-(Is this workflow ok ? - [ ? ]).
+Example column expression:
 
-# ----------------------------------------------------------------
+```
+cf_rating + 10 * default(extras.bonus, 0)
+```
 
-## 9 July, 2025
+See `frontend/src/leaderboardDsl.js` for the implementation (recursive-descent parser + safe interpreter — no `eval`).
 
-### 1: frontend - building a basic UI for a user profile (may use copilot or GPT to do faster.)
-#### -> keep all class names and id meaning full, so that it would be easy to handle for backend.
+## First-time setup
 
-### 2: backend - a simple script which fetches user data from codeforces. for now, -> 
-#### -> Name, Image (recommended. ), Institue, rating, maxrating, questions, solved. (any other if possible.)
+1. **Read `FIREBASE_SETUP.md`** — it walks you through creating the Firebase project, enabling Email/Password auth, creating Firestore, pasting the rules from `firestore.rules`, downloading a service account, and promoting the first admin.
+2. Copy `frontend/.env.example` → `frontend/.env.local` and fill in the `VITE_FIREBASE_*` values from the Firebase console.
+3. Place your downloaded service account JSON at `backend/serviceAccountKey.json` (gitignored).
 
-# These are just for reference, may include more (or maybe less).
+```bash
+# install deps
+cd frontend && npm install
+cd ../backend && npm install
 
+# run dev
+cd backend && npm start          # http://localhost:5000
+cd frontend && npm run dev       # http://localhost:3000
 
+# build
+cd frontend && npm run build
+```
 
+## Roles
 
+- All registered users get `role: "user"` automatically.
+- Promote yourself to `admin` by editing `users/<your-uid>` in the Firestore console and setting `role: "admin"` (see `FIREBASE_SETUP.md` step 10).
+- Admin-only UI: the `Admin` nav link + everything under `/admin/*`.
+- Admin-only API: `POST/PUT/DELETE` on `/api/events`, `/api/leaderboards`, `/api/users/:uid/role`.
 
+## What you can customise without writing code
 
-
+| To change… | Edit |
+| --- | --- |
+| Site name, tagline, footer | `frontend/public/data/site.json` |
+| Home page intro / features | `frontend/public/data/home.json` |
+| Events (committed) | `frontend/public/data/events/*.json` |
+| Events (live) | `/admin/events` |
+| Leaderboards | `frontend/public/data/leaderboards/*.json` or `/admin/leaderboards` |

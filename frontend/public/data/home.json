@@ -1,0 +1,18 @@
+{
+  "hero": {
+    "title": "Welcome to CP-Hub",
+    "subtitle": "The home of competitive programming at IIT Guwahati",
+    "ctaPrimary": { "label": "Browse Events", "to": "/events" },
+    "ctaSecondary": { "label": "View Leaderboard", "to": "/leaderboard" }
+  },
+  "intro": {
+    "title": "About the Coding Club",
+    "body": "The Coding Club at IIT Guwahati is a student-run community of competitive programmers, algorithm enthusiasts, and curious problem solvers. We organize contests, workshops, mock interviews and informal meet-ups throughout the year. Whether you are just starting out or you regularly grind ICPC and Codeforces rounds, there's a place for you here."
+  },
+  "features": [
+    { "title": "Contest Calendar", "body": "A live calendar pulling contests from every major platform.", "icon": "📅" },
+    { "title": "Custom Leaderboards", "body": "Admins create club-specific leaderboards with custom scoring.", "icon": "🏆" },
+    { "title": "Events", "body": "Workshops, mock interviews, and club gatherings — all in one place.", "icon": "🎉" }
+  ],
+  "upcomingEventsCount": 3
+}

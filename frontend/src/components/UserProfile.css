@@ -1,133 +1,81 @@
+/* ── UserProfile (avatar dropdown) ───────────────────── */
 .user-profile-container {
   position: relative;
 }
-
 .user-profile-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  background: transparent;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: #374151;
+  gap: 0.5rem;
+  padding: 0.25rem 0.55rem 0.25rem 0.3rem;
+  border-radius: var(--r-full);
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: border-color var(--t-fast), background var(--t-fast);
 }
-
-.user-profile-button:hover {
-  background-color: #f9fafb;
-  border-color: #d1d5db;
-}
-
+.user-profile-button:hover { border-color: var(--border-strong); background: var(--surface-2); }
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 26px; height: 26px;
+  border-radius: var(--r-full);
   object-fit: cover;
+  background: var(--surface-2);
 }
-
-.user-name {
-  font-size: 14px;
-  font-weight: 500;
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.dropdown-arrow {
-  transition: transform 0.2s ease;
-  color: #9ca3af;
-}
-
-.dropdown-arrow.rotated {
-  transform: rotate(180deg);
-}
+.user-name { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dropdown-arrow { color: var(--text-muted); transition: transform var(--t); }
+.dropdown-arrow.rotated { transform: rotate(180deg); }
 
 .user-dropdown-menu {
   position: absolute;
-  top: 100%;
   right: 0;
-  margin-top: 4px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  min-width: 200px;
-  z-index: 50;
-  overflow: hidden;
+  top: calc(100% + 0.5rem);
+  min-width: 220px;
+  background: var(--surface-1);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-lg);
+  padding: 0.4rem;
+  z-index: 100;
 }
-
 .dropdown-header {
-  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  background-color: #f9fafb;
+  gap: 0.6rem;
+  padding: 0.55rem 0.6rem;
 }
-
 .dropdown-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 36px; height: 36px;
+  border-radius: var(--r-full);
   object-fit: cover;
+  background: var(--surface-2);
 }
-
-.dropdown-user-info {
-  flex: 1;
-  min-width: 0;
-}
-
+.dropdown-user-info { min-width: 0; }
 .dropdown-user-name {
-  font-size: 14px;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #111827;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-
 .dropdown-user-cf {
-  font-size: 12px;
-  color: #6b7280;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-dim);
 }
-
-.dropdown-divider {
-  margin: 0;
-  border: none;
-  border-top: 1px solid #e5e7eb;
-}
-
+.dropdown-divider { height: 1px; background: var(--border); margin: 0.3rem 0.2rem; border: 0; }
 .dropdown-item {
+  display: block;
   width: 100%;
-  padding: 10px 12px;
   text-align: left;
-  background: none;
-  border: none;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--r-sm);
+  font-size: 0.85rem;
+  color: var(--text);
+  background: transparent;
+  border: 0;
   cursor: pointer;
-  font-size: 14px;
-  color: #374151;
-  transition: background-color 0.2s ease;
+  transition: background var(--t-fast), color var(--t-fast);
 }
-
-.dropdown-item:hover {
-  background-color: #f3f4f6;
-}
-
-.logout-item {
-  color: #dc2626;
-}
-
-.logout-item:hover:not(:disabled) {
-  background-color: #fef2f2;
-}
-
-.logout-item:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  background-color: transparent;
-}
+.dropdown-item:hover { background: var(--surface-2); color: var(--accent-strong); }
+.dropdown-item.logout-item { color: #f87171; }
+.dropdown-item.logout-item:hover { background: rgba(239,68,68,0.1); color: #fca5a5; }

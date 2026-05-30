@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import './UserProfile.css';
 
 const UserProfile = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const dropdownRef = useRef(null);
@@ -115,12 +117,14 @@ const UserProfile = () => {
             </div>
           </div>
           <hr className="dropdown-divider" />
-          <button className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
+          <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/profile'); }}>
             Profile
           </button>
-          <button className="dropdown-item" onClick={() => setIsDropdownOpen(false)}>
-            Settings
-          </button>
+          {user.role === 'admin' && (
+            <button className="dropdown-item" onClick={() => { setIsDropdownOpen(false); navigate('/admin'); }}>
+              Admin
+            </button>
+          )}
           <hr className="dropdown-divider" />
           <button className="dropdown-item logout-item" onClick={handleLogout} disabled={isLoggingOut}>
             {isLoggingOut ? 'Logging out...' : 'Logout'}

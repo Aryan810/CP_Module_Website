@@ -1,20 +1,8 @@
-/* Reset and base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.6;
-  color: var(--color-text-primary);
-  background-color: var(--color-primary-bg);
-}
-
+/* App shell */
 .app-main-container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-primary-bg);
+  background: var(--bg);
+  color: var(--text);
 }

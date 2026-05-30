@@ -1,15 +1,23 @@
 {
-  "name": "cp-website",
+  "name": "cp-hub",
   "version": "1.0.0",
-  "description": "Competitive Programming Website - Full Stack",
+  "description": "CP-Hub — IIT Guwahati Coding Club website",
   "scripts": {
     "build": "cd frontend && npm run build",
     "start": "cd backend && npm start",
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm start",
-    "install:all": "cd frontend && npm install && cd ../backend && npm install"
+    "install:all": "cd frontend && npm install && cd ../backend && npm install",
+    "vercel-build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend"
   },
-  "keywords": ["competitive-programming", "react", "express", "mongodb"],
+  "keywords": ["competitive-programming", "react", "firebase", "cp-hub"],
   "author": "CodingClub-IITG",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.1.0",
+    "express": "^5.1.0",
+    "firebase-admin": "^13.10.0"
+  }
 }
+
