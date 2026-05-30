@@ -83,7 +83,7 @@ export default function Leaderboard() {
   if (boards.length === 0) {
     return (
       <main className="page-content-area">
-        <h1>🏆 Leaderboards</h1>
+        <h1>Leaderboards</h1>
         <p>No leaderboards yet. {user?.role === 'admin' && <Link to="/admin/leaderboards">Create one →</Link>}</p>
       </main>
     );
@@ -92,7 +92,7 @@ export default function Leaderboard() {
   return (
     <main className="page-content-area leaderboard-container">
       <div className="leaderboard-header">
-        <h1 className="leaderboard-title">🏆 Leaderboards</h1>
+        <h1 className="leaderboard-title">Leaderboards</h1>
         {user?.role === 'admin' && <Link to="/admin/leaderboards" className="lb-admin-link">Manage →</Link>}
       </div>
 

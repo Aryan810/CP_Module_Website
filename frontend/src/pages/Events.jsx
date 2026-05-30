@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Api from '../services/api';
 import './Events.css';
 
+const fmtDate = (iso) => new Date(iso).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+
 export default function Events() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all'); // all | upcoming | past
 
   useEffect(() => {
     Promise.all([Api.loadStaticEvents(), Api.listEvents()])
@@ -18,36 +21,63 @@ export default function Events() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <main className="page-content-area"><p>Loading events…</p></main>;
-
   const now = new Date();
-  const upcoming = events.filter((e) => new Date(e.date) >= now);
-  const past = events.filter((e) => new Date(e.date) < now);
+  const filtered = useMemo(() => {
+    if (filter === 'upcoming') return events.filter((e) => new Date(e.date) >= now);
+    if (filter === 'past') return events.filter((e) => new Date(e.date) < now);
+    return events;
+  }, [events, filter]);
 
-  const card = (e) => (
-    <Link key={e.slug} to={`/events/${e.slug}`} className="event-card">
-      {e.banner && <img src={e.banner} alt="" className="event-banner" />}
-      <div className="event-card-body">
-        <h3>{e.title}</h3>
-        <p className="event-meta">{new Date(e.date).toLocaleString()} · {e.location || 'TBA'}</p>
-        {e.shortDescription && <p>{e.shortDescription}</p>}
-        {e.tags?.length > 0 && <div className="event-tags">{e.tags.map((t) => <span key={t} className="event-tag">#{t}</span>)}</div>}
-      </div>
-    </Link>
-  );
+  if (loading) return <main className="page-content-area"><p className="text-dim">Loading events…</p></main>;
 
   return (
-    <main className="page-content-area events-page">
-      <h1>Events</h1>
-      {upcoming.length > 0 && (<>
-        <h2>Upcoming</h2>
-        <div className="event-grid">{upcoming.map(card)}</div>
-      </>)}
-      {past.length > 0 && (<>
-        <h2 style={{ marginTop: '2rem' }}>Past</h2>
-        <div className="event-grid">{past.map(card)}</div>
-      </>)}
-      {events.length === 0 && <p>No events yet.</p>}
+    <main className="page-content-area">
+      <div className="events-page-header">
+        <div>
+          <h1>Events</h1>
+          <p className="events-page-sub">Workshops, contests and meetups from the Coding Club</p>
+        </div>
+      </div>
+
+      <div className="events-filter-tabs">
+        {['all', 'upcoming', 'past'].map((f) => (
+          <button
+            key={f}
+            className={`event-filter-tab ${filter === f ? 'active' : ''}`}
+            onClick={() => setFilter(f)}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {filtered.length === 0 ? (
+        <div className="empty-state">No events to show.</div>
+      ) : (
+        <div className="events-grid">
+          {filtered.map((e) => {
+            const upcoming = new Date(e.date) >= now;
+            return (
+              <Link key={e.slug} to={`/events/${e.slug}`} className="event-card">
+                <div className="event-card-banner" style={e.banner ? { backgroundImage: `url(${e.banner})` } : null} />
+                <div className="event-card-body">
+                  <div className="event-card-meta">
+                    <span className="event-card-date">{fmtDate(e.date)}</span>
+                    <span className={`chip ${upcoming ? 'chip-soon' : 'chip-past'}`}>{upcoming ? 'Upcoming' : 'Past'}</span>
+                  </div>
+                  <div className="event-card-title">{e.title}</div>
+                  {e.shortDescription && <div className="event-card-desc">{e.shortDescription}</div>}
+                  {e.tags?.length > 0 && (
+                    <div className="event-card-tags">
+                      {e.tags.slice(0, 4).map((t) => <span key={t} className="chip chip-tag">{t}</span>)}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </main>
   );
 }

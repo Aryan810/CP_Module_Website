@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Plus, Edit2, Trash2 } from 'lucide-react';
 import Api from '../../services/api';
 
 export default function AdminLeaderboards() {
@@ -25,28 +26,64 @@ export default function AdminLeaderboards() {
   };
 
   return (
-    <main className="page-content-area" style={{ maxWidth: 1000, margin: '0 auto', padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Admin · Leaderboards</h1>
-        <Link to="/admin/leaderboards/new" className="btn-cta-primary">+ New leaderboard</Link>
+    <main className="page-content-area">
+      <div className="section-header">
+        <div>
+          <div className="eyebrow">Admin</div>
+          <h1 className="section-title" style={{ fontSize: '1.5rem' }}>Leaderboards</h1>
+          <div className="section-subtitle">{boards.length} configured</div>
+        </div>
+        <Link to="/admin/leaderboards/new" className="btn btn-primary btn-sm">
+          <Plus size={14} /> New leaderboard
+        </Link>
       </div>
-      {loading ? <p>Loading…</p> : (
-        <table style={{ width: '100%', marginTop: '1rem' }}>
-          <thead><tr><th align="left">Name</th><th>Source</th><th>Users</th><th></th></tr></thead>
-          <tbody>
-            {boards.map((b) => (
-              <tr key={b.id}>
-                <td><Link to={`/admin/leaderboards/${b.id}`}>{b.name}</Link><br/><small style={{opacity:0.6}}>{b.id}</small></td>
-                <td align="center" style={{opacity:0.7}}>{b.source}</td>
-                <td align="center">{b.users?.length || 'all'}</td>
-                <td align="right">
-                  <Link to={`/admin/leaderboards/${b.id}`}>Edit</Link>
-                  {b.source === 'live' && <>{' · '}<button onClick={() => del(b.id)} style={{color:'#ef4444',background:'none',border:0,cursor:'pointer'}}>Delete</button></>}
-                </td>
+
+      {loading ? (
+        <p className="text-dim">Loading…</p>
+      ) : boards.length === 0 ? (
+        <div className="empty-state">
+          No leaderboards yet.<br />
+          <Link to="/admin/leaderboards/new" className="btn btn-primary btn-sm" style={{ marginTop: '1rem' }}>
+            <Plus size={14} /> Create your first leaderboard
+          </Link>
+        </div>
+      ) : (
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Source</th>
+                <th>Participants</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {boards.map((b) => (
+                <tr key={b.id}>
+                  <td>
+                    <Link to={`/admin/leaderboards/${b.id}`} style={{ fontWeight: 600 }}>{b.name}</Link>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }} className="mono">{b.id}</div>
+                  </td>
+                  <td>
+                    <span className={`chip ${b.source === 'live' ? 'chip-live' : 'chip-tag'}`}>{b.source}</span>
+                  </td>
+                  <td className="mono">{b.users?.length || 'all'}</td>
+                  <td style={{ textAlign: 'right' }}>
+                    <Link to={`/admin/leaderboards/${b.id}`} className="btn btn-ghost btn-sm">
+                      <Edit2 size={12} /> Edit
+                    </Link>
+                    {b.source === 'live' && (
+                      <button onClick={() => del(b.id)} className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }}>
+                        <Trash2 size={12} /> Delete
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </main>
   );

@@ -74,8 +74,12 @@ export default function AdminLeaderboardEdit() {
   };
 
   return (
-    <main className="page-content-area" style={{ maxWidth: 1100, margin: '0 auto', padding: '2rem' }}>
-      <h1>{isNew ? 'New leaderboard' : `Edit · ${id}`}</h1>
+    <main className="page-content-area" style={{ maxWidth: 1100 }}>
+      <div className="eyebrow">Admin · Leaderboards</div>
+      <h1 style={{ fontSize: '1.5rem', marginBottom: '0.25rem' }}>{isNew ? 'New leaderboard' : `Edit · ${id}`}</h1>
+      <p className="text-dim" style={{ fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+        Configure participants, columns, sort and filter using the CPHub-DSL.
+      </p>
 
       <div className="grid">
         <label>ID (URL slug)<input value={form.id} onChange={(e) => set('id', e.target.value)} disabled={!isNew} /></label>
@@ -112,13 +116,13 @@ export default function AdminLeaderboardEdit() {
                 <td style={{ color: preview.ok ? 'inherit' : '#ef4444' }} title={preview.ok ? '' : preview.error}>
                   {preview.ok ? String(preview.value ?? '') : '#ERR'}
                 </td>
-                <td><button onClick={() => delCol(i)}>×</button></td>
+                <td><button onClick={() => delCol(i)} className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)' }}>×</button></td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <button onClick={addCol} style={{ marginTop: '0.5rem' }}>+ Add column</button>
+      <button onClick={addCol} className="btn btn-outline btn-sm" style={{ marginTop: '0.6rem' }}>+ Add column</button>
 
       <h2>Sort</h2>
       <div className="grid two">
@@ -134,23 +138,22 @@ export default function AdminLeaderboardEdit() {
       <label>Include user if expression is truthy<input value={form.filter || ''} onChange={(e) => set('filter', e.target.value)} style={{ fontFamily: 'monospace' }} placeholder="e.g. cf_rating > 1200" /></label>
 
       <div style={{ marginTop: '1.5rem', display: 'flex', gap: '0.5rem' }}>
-        <button className="btn-cta-primary" onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save'}</button>
-        <button onClick={() => nav(-1)}>Cancel</button>
+        <button className="btn btn-primary" onClick={save} disabled={busy}>{busy ? 'Saving…' : 'Save leaderboard'}</button>
+        <button className="btn btn-ghost" onClick={() => nav(-1)}>Cancel</button>
       </div>
-      {msg && <p style={{ marginTop: '0.5rem' }}>{msg}</p>}
+      {msg && <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>{msg}</p>}
 
       <style>{`
-        h2{margin-top:1.5rem}
-        label{display:flex;flex-direction:column;gap:0.25rem;margin-bottom:0.5rem;}
-        input,select,textarea{padding:0.5rem;border-radius:6px;border:1px solid #374151;background:#111827;color:inherit;font-family:inherit;}
-        button{padding:0.4rem 0.8rem;border-radius:6px;border:1px solid #374151;background:transparent;color:inherit;cursor:pointer;}
+        h2{margin-top:1.75rem; font-size: 1rem; color: var(--text); letter-spacing: 0.02em;}
+        h2::before { content: ''; display: inline-block; width: 3px; height: 14px; background: var(--accent); margin-right: 8px; vertical-align: -2px; border-radius: 2px; }
+        label{display:flex;flex-direction:column;gap:0.3rem;margin-bottom:0.6rem;font-size:0.85rem;color:var(--text-muted);}
         .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.75rem;}
         .grid.two{grid-template-columns:1fr 200px;}
-        .user-picker{display:flex;flex-wrap:wrap;gap:0.5rem;max-height:200px;overflow:auto;padding:0.5rem;border:1px solid #374151;border-radius:6px;}
-        .user-chip{display:flex;align-items:center;gap:0.25rem;padding:0.25rem 0.5rem;background:#1f2937;border-radius:999px;cursor:pointer;}
+        .user-picker{display:flex;flex-wrap:wrap;gap:0.4rem;max-height:200px;overflow:auto;padding:0.6rem;border:1px solid var(--border);border-radius:var(--r);background:var(--surface-1);}
+        .user-chip{display:flex;align-items:center;gap:0.35rem;padding:0.3rem 0.6rem;background:var(--surface-2);border:1px solid var(--border);border-radius:999px;cursor:pointer;font-size:0.8rem;}
         .user-chip small{opacity:0.6;}
         .cols-table{width:100%;border-collapse:collapse;}
-        .cols-table th,.cols-table td{padding:0.5rem;border-bottom:1px solid #374151;text-align:left;}
+        .cols-table th,.cols-table td{padding:0.5rem;border-bottom:1px solid var(--border);text-align:left;font-size:0.85rem;}
         .cols-table td:nth-child(1){width:20%}.cols-table td:nth-child(2){width:45%}.cols-table td:nth-child(3){width:25%}
       `}</style>
     </main>

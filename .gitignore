@@ -9,16 +9,19 @@ yarn-error.log*
 # Test folder
 test/
 
-# Environment variables
-# .env
-# backend/.env
+# Environment variables (secrets - never commit!)
+.env
+.env.*
+!.env.example
+backend/.env
 backend/scripts
-# frontend/.env
-# .env.local
-# backend/serviceAccountKey.json
-# frontend/.env.local
-# frontend/.env.development.local
-# frontend/.env.production.local
+backend/serviceAccountKey.json
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.production.local
+
+# Vercel
+.vercel
 
 # Package lock files
 backend/package-lock.json

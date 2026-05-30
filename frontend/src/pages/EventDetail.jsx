@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import { Calendar, MapPin, ArrowLeft, ExternalLink } from 'lucide-react';
 import Api from '../services/api';
 import './Events.css';
+
+const fmtDateTime = (iso) => new Date(iso).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
 
 export default function EventDetail() {
   const { slug } = useParams();
@@ -12,7 +15,6 @@ export default function EventDetail() {
   useEffect(() => {
     (async () => {
       try {
-        // Try dynamic first, then static.
         const dyn = await Api.listEvents().then((all) => all.find((e) => e.slug === slug));
         if (dyn) return setEvt(dyn);
         const stat = await Api.loadStaticEvents().then((all) => all.find((e) => e.slug === slug));
@@ -22,30 +24,54 @@ export default function EventDetail() {
     })();
   }, [slug]);
 
-  if (err) return <main className="page-content-area"><p>{err}</p><Link to="/events">← All events</Link></main>;
-  if (!evt) return <main className="page-content-area"><p>Loading…</p></main>;
+  if (err) return (
+    <main className="page-content-area"><div className="empty-state">{err}<br /><Link to="/events" className="btn btn-ghost btn-sm" style={{ marginTop: '1rem' }}><ArrowLeft size={13} /> All events</Link></div></main>
+  );
+  if (!evt) return <main className="page-content-area"><p className="text-dim">Loading…</p></main>;
+
+  const upcoming = new Date(evt.date) >= new Date();
 
   return (
-    <main className="page-content-area event-detail">
-      <Link to="/events" className="event-back">← All events</Link>
-      <h1>{evt.title}</h1>
-      <p className="event-meta">{new Date(evt.date).toLocaleString()} · {evt.location || 'TBA'}</p>
-      {evt.banner && <img src={evt.banner} alt="" className="event-detail-banner" />}
-      {evt.tags?.length > 0 && <div className="event-tags">{evt.tags.map((t) => <span key={t} className="event-tag">#{t}</span>)}</div>}
-      <div className="event-body">
-        <ReactMarkdown>{evt.body || ''}</ReactMarkdown>
+    <main className="page-content-area">
+      <div className="event-detail-wrap">
+        <Link to="/events" className="btn btn-ghost btn-sm" style={{ marginBottom: '1rem' }}><ArrowLeft size={13} /> All events</Link>
+
+        {evt.banner && <div className="event-detail-banner" style={{ backgroundImage: `url(${evt.banner})` }} />}
+
+        <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+          <span className={`chip ${upcoming ? 'chip-soon' : 'chip-past'}`}>{upcoming ? 'Upcoming' : 'Past'}</span>
+          {evt.tags?.length > 0 && evt.tags.map((t) => <span key={t} className="chip chip-tag">{t}</span>)}
+        </div>
+
+        <h1 className="event-detail-title">{evt.title}</h1>
+
+        <div className="event-detail-meta">
+          <span><Calendar size={14} /> {fmtDateTime(evt.date)}</span>
+          {evt.location && <span><MapPin size={14} /> {evt.location}</span>}
+        </div>
+
+        {evt.body && (
+          <div className="event-detail-body">
+            <ReactMarkdown>{evt.body}</ReactMarkdown>
+          </div>
+        )}
+
+        {evt.images?.length > 0 && (
+          <div className="event-detail-gallery">
+            {evt.images.map((u, i) => <img key={i} src={u} alt="" />)}
+          </div>
+        )}
+
+        {evt.links?.length > 0 && (
+          <div className="event-detail-links">
+            {evt.links.map((l, i) => (
+              <a key={i} href={l.url} target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+                {l.label} <ExternalLink size={12} />
+              </a>
+            ))}
+          </div>
+        )}
       </div>
-      {evt.images?.length > 0 && (
-        <div className="event-gallery">
-          {evt.images.map((u, i) => <img key={i} src={u} alt="" />)}
-        </div>
-      )}
-      {evt.links?.length > 0 && (
-        <div className="event-links">
-          <h3>Links</h3>
-          <ul>{evt.links.map((l, i) => <li key={i}><a href={l.url} target="_blank" rel="noreferrer">{l.label}</a></li>)}</ul>
-        </div>
-      )}
     </main>
   );
 }

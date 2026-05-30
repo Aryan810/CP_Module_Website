@@ -16,6 +16,7 @@ import AdminEvents from './pages/admin/AdminEvents.jsx';
 import AdminEventEdit from './pages/admin/AdminEventEdit.jsx';
 import AdminLeaderboards from './pages/admin/AdminLeaderboards.jsx';
 import AdminLeaderboardEdit from './pages/admin/AdminLeaderboardEdit.jsx';
+import AdminUsers from './pages/admin/AdminUsers.jsx';
 import Api from './services/api';
 import './App.css';
 
@@ -43,6 +44,7 @@ function App() {
             <Route path="/admin/events/:slug" element={<AdminRoute><AdminEventEdit /></AdminRoute>} />
             <Route path="/admin/leaderboards" element={<AdminRoute><AdminLeaderboards /></AdminRoute>} />
             <Route path="/admin/leaderboards/:id" element={<AdminRoute><AdminLeaderboardEdit /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
             <Route path="*" element={<div className="page-content-area"><h1>404</h1><p>Page not found.</p></div>} />
           </Routes>
         </div>
